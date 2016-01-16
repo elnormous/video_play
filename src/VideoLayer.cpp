@@ -102,8 +102,6 @@ char             proto[8];
 
 VideoLayer::VideoLayer()
 {
-    _texture = ouzel::Engine::getInstance()->getRenderer()->createTexture(true);
-    
     _shader = Engine::getInstance()->getRenderer()->getShader(SHADER_TEXTURE);
     
 #ifdef OUZEL_PLATFORM_WINDOWS
@@ -216,6 +214,8 @@ VideoLayer::VideoLayer()
     /*if (setup_filters(pFormatCtx, pCodecCtx, videoStream, &filter_graph, &buffersrc_ctx, &buffersink_ctx) < 0) {
      return;
      }*/
+    
+    _texture = ouzel::Engine::getInstance()->getRenderer()->createTexture(Size2(pCodecCtx->width, pCodecCtx->height), true);
 }
 
 VideoLayer::~VideoLayer()
