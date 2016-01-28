@@ -242,79 +242,74 @@ int VideoLayer::getFrame()
     }
     
     int rc;
-    
-    while (true)
-    {
-        if ((rc = get_frame(pFormatCtx, pCodecCtx, pFrame, videoStream, second)) == 0) {
-            
-            log("Picture type: %d", pFrame->pict_type);
-            
-            //if (pFrame->pict_type == 0)
-            //{ AV_PICTURE_TYPE_NONE
-                //need_flush = 1;
-                
-                /*if (filter_frame(buffersrc_ctx, buffersink_ctx, pFrame, pFrame) == AVERROR(EAGAIN)) {
-                 need_flush = 1;
-                 continue;
-                 }*/
 
-                /*if (need_flush) {
-                 if (filter_frame(buffersrc_ctx, buffersink_ctx, NULL, pFrame) < 0) {
-                 return 0xDEADBEEF;
-                 }
-                 
-                 rc = OK;
-                 }*/
-                
-                
-                /*AVFrame* newFrame = av_frame_alloc();
-                 int numBytes = avpicture_get_size(AV_PIX_FMT_RGB24, pFrame->width, pFrame->height);
-                 uint8_t *buffer= malloc(numBytes);
-                 
-                 avpicture_fill((AVPicture *)newFrame, buffer, AV_PIX_FMT_RGB24, pFrame->width, pFrame->height);
-                 
-                 img_convert((AVPicture *)newFrame, AV_PIX_FMT_RGB24,
-                 (AVPicture*)pFrame, pCodecCtx->pix_fmt, pCodecCtx->width,
-                 pCodecCtx->height);*/
-                
-                //uncompressed_size = pFrame->width * pFrame->height * 3;
-                
-                //char *newBuffer = malloc(uncompressed_size);
-                //av_image_copy_to_buffer(newBuffer, uncompressed_size, pFrame->data, pFrame->linesize, AV_PIX_FMT_RGB24, pFrame->width, pFrame->height);
-                
-            ouzel::log("Pixel format: %d, %d", pCodecCtx->pix_fmt, AV_PIX_FMT_YUV420P);
-            ouzel::log("Colorspace: %d", pFrame->colorspace);
+    if ((rc = get_frame(pFormatCtx, pCodecCtx, pFrame, videoStream, second)) == 0) {
+        
+        log("Picture type: %d", pFrame->pict_type);
+        
+        //if (pFrame->pict_type == 0)
+        //{ AV_PICTURE_TYPE_NONE
+            //need_flush = 1;
+            
+            /*if (filter_frame(buffersrc_ctx, buffersink_ctx, pFrame, pFrame) == AVERROR(EAGAIN)) {
+             need_flush = 1;
+             continue;
+             }*/
+
+            /*if (need_flush) {
+             if (filter_frame(buffersrc_ctx, buffersink_ctx, NULL, pFrame) < 0) {
+             return 0xDEADBEEF;
+             }
+             
+             rc = OK;
+             }*/
             
             
+            /*AVFrame* newFrame = av_frame_alloc();
+             int numBytes = avpicture_get_size(AV_PIX_FMT_RGB24, pFrame->width, pFrame->height);
+             uint8_t *buffer= malloc(numBytes);
+             
+             avpicture_fill((AVPicture *)newFrame, buffer, AV_PIX_FMT_RGB24, pFrame->width, pFrame->height);
+             
+             img_convert((AVPicture *)newFrame, AV_PIX_FMT_RGB24,
+             (AVPicture*)pFrame, pCodecCtx->pix_fmt, pCodecCtx->width,
+             pCodecCtx->height);*/
             
-            pFrameRGB = av_frame_alloc();
+            //uncompressed_size = pFrame->width * pFrame->height * 3;
             
-            if (pFrameRGB == NULL)
-            {
-                printf("Failed to alloc frame\n");
-                return 0xDEADBEEF;
-            }
+            //char *newBuffer = malloc(uncompressed_size);
+            //av_image_copy_to_buffer(newBuffer, uncompressed_size, pFrame->data, pFrame->linesize, AV_PIX_FMT_RGB24, pFrame->width, pFrame->height);
             
-            avpicture_alloc((AVPicture*)pFrameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, pCodecCtx->width, pCodecCtx->height);
-            
-            sws_scale(scalerCtx, pFrame->data, pFrame->linesize, 0, pFrame->height, pFrameRGB->data, pFrameRGB->linesize);
-            
-            /*for (int i = 0; i < 1920 * 1080; ++i)
-            {
-                pFrameRGB->data[0][i + 0] = 255;
-                pFrameRGB->data[0][i + 1] = 255;
-                pFrameRGB->data[0][i + 2] = 255;
-                pFrameRGB->data[0][i + 3] = 255;
-            }*/
-            
-            _texture->upload(pFrameRGB->data, ouzel::Size2(pFrameRGB->width, pFrameRGB->height));
-            
-            av_frame_free(&pFrameRGB);
-            
-            rc = OK;
-            
-            break;
+        ouzel::log("Pixel format: %d, %d", pCodecCtx->pix_fmt, AV_PIX_FMT_YUV420P);
+        ouzel::log("Colorspace: %d", pFrame->colorspace);
+        
+        
+        
+        pFrameRGB = av_frame_alloc();
+        
+        if (pFrameRGB == NULL)
+        {
+            printf("Failed to alloc frame\n");
+            return 0xDEADBEEF;
         }
+        
+        avpicture_alloc((AVPicture*)pFrameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, pCodecCtx->width, pCodecCtx->height);
+        
+        sws_scale(scalerCtx, pFrame->data, pFrame->linesize, 0, pFrame->height, pFrameRGB->data, pFrameRGB->linesize);
+        
+        /*for (int i = 0; i < 1920 * 1080; ++i)
+        {
+            pFrameRGB->data[0][i + 0] = 255;
+            pFrameRGB->data[0][i + 1] = 255;
+            pFrameRGB->data[0][i + 2] = 255;
+            pFrameRGB->data[0][i + 3] = 255;
+        }*/
+        
+        _texture->upload(pFrameRGB->data[0], ouzel::Size2(pFrame->width, pFrame->height));
+        
+        av_frame_free(&pFrameRGB);
+        
+        rc = OK;
     }
     
     if (pFrame == NULL || rc != OK) {
