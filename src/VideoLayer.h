@@ -27,7 +27,7 @@ public:
     virtual void update(float delta) override;
     virtual void draw() override;
     
-    int get_frame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream, int64_t second);
+    int get_frame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream);
     float display_aspect_ratio(AVCodecContext* pCodecCtx);
     int display_width(AVCodecContext* pCodecCtx);
     
@@ -44,14 +44,10 @@ protected:
     AVFormatContext* pFormatCtx = nullptr;
     AVCodecContext* pCodecCtx = nullptr;
     AVCodec* pCodec = nullptr;
-    unsigned char* bufferAVIO = nullptr;
-    int second = 0;
     AVCodecContext* pOCodecCtx = nullptr;
     AVCodec* pOCodec = nullptr;
+    AVFrame* pFrame = nullptr;
     AVFrame* pFrameRGB = nullptr;
     struct SwsContext* scalerCtx = nullptr;
     AVDictionary* input_options = nullptr;
-    char proto[8];
-    
-    AVFrame* pFrame = nullptr;
 };

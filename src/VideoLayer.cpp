@@ -52,13 +52,6 @@ VideoLayer::VideoLayer()
     
     int rc = ERROR;
     
-    bufferAVIO = (unsigned char *)malloc(BUFFER_SIZE);
-    if (!bufferAVIO)
-    {
-        ouzel::log("Couldn't alloc AVIO buffer\n");
-        return;
-    }
-    
     pFormatCtx = avformat_alloc_context();
     if (!pFormatCtx)
     {
@@ -75,6 +68,7 @@ VideoLayer::VideoLayer()
     
     std::string stream = Engine::getInstance()->getArgs()[1];
     
+    char proto[8];
     av_url_split(proto, sizeof(proto), NULL, 0,
                  NULL, 0, NULL,
                  NULL, 0, stream.c_str());
@@ -154,8 +148,15 @@ VideoLayer::VideoLayer()
     
     if (pFrame == NULL)
     {
-        ouzel::log("Could not alloc frame memory\n");
+        ouzel::log("Failed to alloc frame\n");
         return;
+    }
+    
+    pFrameRGB = av_frame_alloc();
+    
+    if (pFrameRGB == NULL)
+    {
+        printf("Failed to alloc frame\n");
     }
 }
 
@@ -197,15 +198,11 @@ void VideoLayer::draw()
     Engine::getInstance()->getRenderer()->drawMeshBuffer(_mesh);
 }
 
-int VideoLayer::get_frame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream, int64_t second)
+int VideoLayer::get_frame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream)
 {
     AVPacket packet;
     int      frameFinished = 0;
     int      rc;
-    
-    if ((pFormatCtx->duration > 0) && ((((float_t) pFormatCtx->duration / AV_TIME_BASE) - second)) < 0.1) {
-        return ERROR;
-    }
     
     rc = ERROR;
     // Find the nearest frame
@@ -242,23 +239,13 @@ int VideoLayer::getFrame()
 {
     int rc;
 
-    if ((rc = get_frame(pFormatCtx, pCodecCtx, pFrame, videoStream, second)) == 0) {
-        
-        pFrameRGB = av_frame_alloc();
-        
-        if (pFrameRGB == NULL)
-        {
-            printf("Failed to alloc frame\n");
-            return 0xDEADBEEF;
-        }
+    if ((rc = get_frame(pFormatCtx, pCodecCtx, pFrame, videoStream)) == 0) {
         
         avpicture_alloc((AVPicture*)pFrameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, pCodecCtx->width, pCodecCtx->height);
         
         sws_scale(scalerCtx, pFrame->data, pFrame->linesize, 0, pFrame->height, pFrameRGB->data, pFrameRGB->linesize);
         
         _texture->upload(pFrameRGB->data[0], ouzel::Size2(pFrame->width, pFrame->height));
-        
-        av_frame_free(&pFrameRGB);
         
         rc = OK;
     }
