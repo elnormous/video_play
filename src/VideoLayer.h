@@ -48,9 +48,10 @@ protected:
     int second = 0;
     AVCodecContext* pOCodecCtx = nullptr;
     AVCodec* pOCodec = nullptr;
-    AVPacket* packet = nullptr;
     AVFrame* pFrameRGB = nullptr;
     struct SwsContext* scalerCtx = nullptr;
     AVDictionary* input_options = nullptr;
     char proto[8];
+    
+    AVFrame* pFrame = nullptr;
 };
