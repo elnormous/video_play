@@ -121,12 +121,6 @@ VideoLayer::VideoLayer()
         return;
     }
     
-    //setup_parameters(cf, ctx, pFormatCtx, pCodecCtx);
-    
-    /*if (setup_filters(pFormatCtx, pCodecCtx, videoStream, &filter_graph, &buffersrc_ctx, &buffersink_ctx) < 0) {
-     return;
-     }*/
-    
     _texture = ouzel::Engine::getInstance()->getRenderer()->createTexture(Size2(pCodecCtx->width, pCodecCtx->height), true, false);
     
     scalerCtx = sws_getContext(pCodecCtx->width,
