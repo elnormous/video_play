@@ -165,11 +165,6 @@ VideoLayer::~VideoLayer()
     // Free the YUV frame
     if (pFrame) av_frame_free(&pFrame);
     
-    if (pOCodecCtx)
-    {
-        avcodec_free_context(&pOCodecCtx);
-    }
-    
     if (pFrameRGB) av_frame_free(&pFrameRGB);
     
     if (scalerCtx) sws_freeContext(scalerCtx);

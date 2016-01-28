@@ -41,8 +41,6 @@ protected:
     AVFormatContext* pFormatCtx = nullptr;
     AVCodecContext* pCodecCtx = nullptr;
     AVCodec* pCodec = nullptr;
-    AVCodecContext* pOCodecCtx = nullptr;
-    AVCodec* pOCodec = nullptr;
     AVFrame* pFrame = nullptr;
     AVFrame* pFrameRGB = nullptr;
     struct SwsContext* scalerCtx = nullptr;
