@@ -10,16 +10,6 @@
 
 #include <stdio.h>
 
-extern "C"
-{
-#include <libavformat/avformat.h>
-#include <libswscale/swscale.h>
-#include <libavformat/avio.h>
-#include <libavfilter/buffersink.h>
-#include <libavfilter/buffersrc.h>
-#include <libavcodec/avcodec.h>
-}
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -33,73 +23,6 @@ extern "C"
 
 using namespace ouzel;
 
-int get_frame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, AVFrame *pFrame, int videoStream, int64_t second)
-{
-    AVPacket packet;
-    int      frameFinished = 0;
-    int      rc;
-    
-    if ((pFormatCtx->duration > 0) && ((((float_t) pFormatCtx->duration / AV_TIME_BASE) - second)) < 0.1) {
-        return ERROR;
-    }
-    
-    rc = ERROR;
-    // Find the nearest frame
-    while (!frameFinished && av_read_frame(pFormatCtx, &packet) >= 0) {
-        // Is this a packet from the video stream?
-        if (packet.stream_index == videoStream) {
-            // Decode video frame
-            avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
-            // Did we get a video frame?
-            if (frameFinished) {
-                rc = OK;
-            }
-        }
-        // Free the packet that was allocated by av_read_frame
-        av_packet_unref(&packet);
-    }
-    
-    return rc;
-}
-
-float display_aspect_ratio(AVCodecContext *pCodecCtx)
-{
-    double aspect_ratio = av_q2d(pCodecCtx->sample_aspect_ratio);
-    return ((float) pCodecCtx->width / pCodecCtx->height) * (aspect_ratio ? aspect_ratio : 1);
-}
-
-
-int display_width(AVCodecContext *pCodecCtx)
-{
-    return pCodecCtx->height * display_aspect_ratio(pCodecCtx);
-}
-
-void init()
-{
-    // Register all formats and codecs
-    av_register_all();
-    av_log_set_level(AV_LOG_ERROR);
-}
-
-int              rc, ret, videoStream;
-AVFormatContext *pFormatCtx = NULL;
-AVCodecContext  *pCodecCtx = NULL;
-AVCodec         *pCodec = NULL;
-AVFrame         *pFrame = NULL;
-//size_t           uncompressed_size;
-unsigned char   *bufferAVIO = NULL;
-int              need_flush = 0;
-char             value[10];
-int              threads = 2;
-int              second = 0;
-AVCodecContext  *pOCodecCtx = NULL;
-AVCodec         *pOCodec = NULL;
-AVPacket        *packet = NULL;
-AVFrame         *pFrameRGB = NULL;
-struct SwsContext *scalerCtx = NULL;
-AVDictionary    *input_options = NULL;
-char             proto[8];
-
 VideoLayer::VideoLayer()
 {
     _shader = Engine::getInstance()->getCache()->getShader(SHADER_TEXTURE);
@@ -112,30 +35,22 @@ VideoLayer::VideoLayer()
     
     std::vector<uint16_t> indices = {0, 1, 2, 1, 3, 2};
     
-    Vector2 textCoords[4];
-    
-    textCoords[0] = Vector2(0.0f, 1.0f);
-    textCoords[1] = Vector2(1.0f, 1.0f);
-    textCoords[2] = Vector2(0.0f, 0.0f);
-    textCoords[3] = Vector2(1.0f, 0.0f);
-    
     std::vector<VertexPCT> vertices = {
-        VertexPCT(Vector3(-1.0f, -1.0f, 0.0f), Color(255, 255, 255, 255), textCoords[0]),
-        VertexPCT(Vector3(1.0f, -1.0f, 0.0f), Color(255, 255, 255, 255), textCoords[1]),
-        VertexPCT(Vector3(-1.0f, 1.0f, 0.0f),  Color(255, 255, 255, 255), textCoords[2]),
-        VertexPCT(Vector3(1.0f, 1.0f, 0.0f),  Color(255, 255, 255, 255), textCoords[3])
+        VertexPCT(Vector3(-1.0f, -1.0f, 0.0f), Color(255, 255, 255, 255), Vector2(0.0f, 1.0f)),
+        VertexPCT(Vector3(1.0f, -1.0f, 0.0f), Color(255, 255, 255, 255), Vector2(1.0f, 1.0f)),
+        VertexPCT(Vector3(-1.0f, 1.0f, 0.0f),  Color(255, 255, 255, 255), Vector2(0.0f, 0.0f)),
+        VertexPCT(Vector3(1.0f, 1.0f, 0.0f),  Color(255, 255, 255, 255), Vector2(1.0f, 0.0f))
     };
     
     _mesh = Engine::getInstance()->getRenderer()->createMeshBuffer(indices.data(), sizeof(uint16_t), static_cast<uint32_t>(indices.size()), false,
-                                                                                       vertices.data(), sizeof(VertexPCT), static_cast<uint32_t>(vertices.size()), true,
-                                                                                       VertexPCT::ATTRIBUTES);
-    init();
+                                                                   vertices.data(), sizeof(VertexPCT), static_cast<uint32_t>(vertices.size()), true,
+                                                                   VertexPCT::ATTRIBUTES);
     
+    // Register all formats and codecs
+    av_register_all();
+    av_log_set_level(AV_LOG_ERROR);
     
-    
-    
-    
-    rc = ERROR;
+    int rc = ERROR;
     
     bufferAVIO = (unsigned char *)malloc(BUFFER_SIZE);
     if (!bufferAVIO)
@@ -170,6 +85,7 @@ VideoLayer::VideoLayer()
     }
     
     // Open video file
+    int ret;
     if ((ret = avformat_open_input(&pFormatCtx, stream.c_str(), NULL, &input_options)) != 0)
     {
         ouzel::log("Couldn't open file %s, error: %d\n", stream.c_str(), ret);
@@ -261,6 +177,47 @@ void VideoLayer::draw()
     Engine::getInstance()->getRenderer()->drawMeshBuffer(_mesh);
 }
 
+int VideoLayer::get_frame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, AVFrame *pFrame, int videoStream, int64_t second)
+{
+    AVPacket packet;
+    int      frameFinished = 0;
+    int      rc;
+    
+    if ((pFormatCtx->duration > 0) && ((((float_t) pFormatCtx->duration / AV_TIME_BASE) - second)) < 0.1) {
+        return ERROR;
+    }
+    
+    rc = ERROR;
+    // Find the nearest frame
+    while (!frameFinished && av_read_frame(pFormatCtx, &packet) >= 0) {
+        // Is this a packet from the video stream?
+        if (packet.stream_index == videoStream) {
+            // Decode video frame
+            avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
+            // Did we get a video frame?
+            if (frameFinished) {
+                rc = OK;
+            }
+        }
+        // Free the packet that was allocated by av_read_frame
+        av_packet_unref(&packet);
+    }
+    
+    return rc;
+}
+
+float VideoLayer::display_aspect_ratio(AVCodecContext *pCodecCtx)
+{
+    double aspect_ratio = av_q2d(pCodecCtx->sample_aspect_ratio);
+    return ((float) pCodecCtx->width / pCodecCtx->height) * (aspect_ratio ? aspect_ratio : 1);
+}
+
+
+int VideoLayer::display_width(AVCodecContext *pCodecCtx)
+{
+    return pCodecCtx->height * display_aspect_ratio(pCodecCtx);
+}
+
 int VideoLayer::getFrame()
 {
     // Allocate video frame
@@ -270,6 +227,8 @@ int VideoLayer::getFrame()
         ouzel::log("Could not alloc frame memory\n");
         return 0xDEADBEEF;
     }
+    
+    int rc;
     
     if ((rc = get_frame(pFormatCtx, pCodecCtx, pFrame, videoStream, second)) == 0) {
         

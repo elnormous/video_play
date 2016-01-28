@@ -45,7 +45,7 @@ namespace ouzel
         _uiLayer = std::make_shared<ouzel::Layer>();
         scene->addLayer(_uiLayer);
         
-        Engine::getInstance()->getInput()->startDiscovery();
+        Engine::getInstance()->getInput()->startGamepadDiscovery();
     }
     
     bool Application::handleKeyDown(const KeyboardEvent& event, VoidPtr const& sender) const
