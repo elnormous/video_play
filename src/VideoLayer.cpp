@@ -198,7 +198,7 @@ void VideoLayer::draw()
     Engine::getInstance()->getRenderer()->drawMeshBuffer(_mesh);
 }
 
-int VideoLayer::get_frame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream)
+int VideoLayer::readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream)
 {
     AVPacket packet;
     int      frameFinished = 0;
@@ -223,23 +223,11 @@ int VideoLayer::get_frame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx
     return rc;
 }
 
-float VideoLayer::display_aspect_ratio(AVCodecContext* pCodecCtx)
-{
-    double aspect_ratio = av_q2d(pCodecCtx->sample_aspect_ratio);
-    return ((float) pCodecCtx->width / pCodecCtx->height) * (aspect_ratio ? aspect_ratio : 1);
-}
-
-
-int VideoLayer::display_width(AVCodecContext* pCodecCtx)
-{
-    return pCodecCtx->height * display_aspect_ratio(pCodecCtx);
-}
-
 int VideoLayer::getFrame()
 {
     int rc;
 
-    if ((rc = get_frame(pFormatCtx, pCodecCtx, pFrame, videoStream)) == 0) {
+    if ((rc = readFrame(pFormatCtx, pCodecCtx, pFrame, videoStream)) == 0) {
         
         avpicture_alloc((AVPicture*)pFrameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, pCodecCtx->width, pCodecCtx->height);
         

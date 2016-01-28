@@ -27,10 +27,7 @@ public:
     virtual void update(float delta) override;
     virtual void draw() override;
     
-    int get_frame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream);
-    float display_aspect_ratio(AVCodecContext* pCodecCtx);
-    int display_width(AVCodecContext* pCodecCtx);
-    
+    int readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream);
     int getFrame();
     
 protected:
