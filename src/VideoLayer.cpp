@@ -115,6 +115,8 @@ VideoLayer::VideoLayer()
     // Get a pointer to the codec context for the video stream
     pCodecCtx = pFormatCtx->streams[videoStream]->codec;
     
+    int threads = 2;
+    char value[10];
     AVDictionary *dict = NULL;
     sprintf(value, "%d", threads);
     av_dict_set(&dict, "threads", value, 0);
@@ -132,6 +134,20 @@ VideoLayer::VideoLayer()
      }*/
     
     _texture = ouzel::Engine::getInstance()->getRenderer()->createTexture(Size2(pCodecCtx->width, pCodecCtx->height), true, false);
+    
+    scalerCtx = sws_getContext(pCodecCtx->width,
+                               pCodecCtx->height,
+                               pCodecCtx->pix_fmt,
+                               pCodecCtx->width,
+                               pCodecCtx->height,
+                               AV_PIX_FMT_RGBA, //AV_PIX_FMT_RGB24,
+                               SWS_BILINEAR, //SWS_BICUBIC
+                               NULL, NULL, NULL);
+    if (!scalerCtx)
+    {
+        printf("sws_getContext() failed\n");
+        return;
+    }
 }
 
 VideoLayer::~VideoLayer()
@@ -147,9 +163,6 @@ VideoLayer::~VideoLayer()
     }
     
     if (pFrameRGB) av_frame_free(&pFrameRGB);
-    
-    // Free the YUV frame
-    if (pFrame) av_frame_free(&pFrame);
     
     if (scalerCtx) sws_freeContext(scalerCtx);
     
@@ -177,7 +190,7 @@ void VideoLayer::draw()
     Engine::getInstance()->getRenderer()->drawMeshBuffer(_mesh);
 }
 
-int VideoLayer::get_frame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, AVFrame *pFrame, int videoStream, int64_t second)
+int VideoLayer::get_frame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream, int64_t second)
 {
     AVPacket packet;
     int      frameFinished = 0;
@@ -206,14 +219,14 @@ int VideoLayer::get_frame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx
     return rc;
 }
 
-float VideoLayer::display_aspect_ratio(AVCodecContext *pCodecCtx)
+float VideoLayer::display_aspect_ratio(AVCodecContext* pCodecCtx)
 {
     double aspect_ratio = av_q2d(pCodecCtx->sample_aspect_ratio);
     return ((float) pCodecCtx->width / pCodecCtx->height) * (aspect_ratio ? aspect_ratio : 1);
 }
 
 
-int VideoLayer::display_width(AVCodecContext *pCodecCtx)
+int VideoLayer::display_width(AVCodecContext* pCodecCtx)
 {
     return pCodecCtx->height * display_aspect_ratio(pCodecCtx);
 }
@@ -221,7 +234,7 @@ int VideoLayer::display_width(AVCodecContext *pCodecCtx)
 int VideoLayer::getFrame()
 {
     // Allocate video frame
-    pFrame = av_frame_alloc();
+    AVFrame* pFrame = av_frame_alloc();
     
     if (pFrame == NULL) {
         ouzel::log("Could not alloc frame memory\n");
@@ -230,57 +243,49 @@ int VideoLayer::getFrame()
     
     int rc;
     
-    if ((rc = get_frame(pFormatCtx, pCodecCtx, pFrame, videoStream, second)) == 0) {
-        
-        //if (pFrame->pict_type == 0)
-        { // AV_PICTURE_TYPE_NONE
-            need_flush = 1;
+    while (true)
+    {
+        if ((rc = get_frame(pFormatCtx, pCodecCtx, pFrame, videoStream, second)) == 0) {
             
-            /*if (filter_frame(buffersrc_ctx, buffersink_ctx, pFrame, pFrame) == AVERROR(EAGAIN)) {
-             need_flush = 1;
-             continue;
-             }*/
+            log("Picture type: %d", pFrame->pict_type);
+            
+            //if (pFrame->pict_type == 0)
+            //{ AV_PICTURE_TYPE_NONE
+                //need_flush = 1;
+                
+                /*if (filter_frame(buffersrc_ctx, buffersink_ctx, pFrame, pFrame) == AVERROR(EAGAIN)) {
+                 need_flush = 1;
+                 continue;
+                 }*/
 
-            /*if (need_flush) {
-             if (filter_frame(buffersrc_ctx, buffersink_ctx, NULL, pFrame) < 0) {
-             return 0xDEADBEEF;
-             }
-             
-             rc = OK;
-             }*/
-            
-            
-            /*AVFrame* newFrame = av_frame_alloc();
-             int numBytes = avpicture_get_size(AV_PIX_FMT_RGB24, pFrame->width, pFrame->height);
-             uint8_t *buffer= malloc(numBytes);
-             
-             avpicture_fill((AVPicture *)newFrame, buffer, AV_PIX_FMT_RGB24, pFrame->width, pFrame->height);
-             
-             img_convert((AVPicture *)newFrame, AV_PIX_FMT_RGB24,
-             (AVPicture*)pFrame, pCodecCtx->pix_fmt, pCodecCtx->width,
-             pCodecCtx->height);*/
-            
-            //uncompressed_size = pFrame->width * pFrame->height * 3;
-            
-            //char *newBuffer = malloc(uncompressed_size);
-            //av_image_copy_to_buffer(newBuffer, uncompressed_size, pFrame->data, pFrame->linesize, AV_PIX_FMT_RGB24, pFrame->width, pFrame->height);
-            
+                /*if (need_flush) {
+                 if (filter_frame(buffersrc_ctx, buffersink_ctx, NULL, pFrame) < 0) {
+                 return 0xDEADBEEF;
+                 }
+                 
+                 rc = OK;
+                 }*/
+                
+                
+                /*AVFrame* newFrame = av_frame_alloc();
+                 int numBytes = avpicture_get_size(AV_PIX_FMT_RGB24, pFrame->width, pFrame->height);
+                 uint8_t *buffer= malloc(numBytes);
+                 
+                 avpicture_fill((AVPicture *)newFrame, buffer, AV_PIX_FMT_RGB24, pFrame->width, pFrame->height);
+                 
+                 img_convert((AVPicture *)newFrame, AV_PIX_FMT_RGB24,
+                 (AVPicture*)pFrame, pCodecCtx->pix_fmt, pCodecCtx->width,
+                 pCodecCtx->height);*/
+                
+                //uncompressed_size = pFrame->width * pFrame->height * 3;
+                
+                //char *newBuffer = malloc(uncompressed_size);
+                //av_image_copy_to_buffer(newBuffer, uncompressed_size, pFrame->data, pFrame->linesize, AV_PIX_FMT_RGB24, pFrame->width, pFrame->height);
+                
             ouzel::log("Pixel format: %d, %d", pCodecCtx->pix_fmt, AV_PIX_FMT_YUV420P);
             ouzel::log("Colorspace: %d", pFrame->colorspace);
             
-            scalerCtx = sws_getContext(pCodecCtx->width,
-                                       pCodecCtx->height,
-                                       pCodecCtx->pix_fmt,
-                                       pCodecCtx->width,
-                                       pCodecCtx->height,
-                                       AV_PIX_FMT_RGBA, //AV_PIX_FMT_RGB24,
-                                       SWS_BILINEAR, //SWS_BICUBIC
-                                       NULL, NULL, NULL);
-            if (!scalerCtx)
-            {
-                printf("sws_getContext() failed\n");
-                return 0xDEADBEEF;
-            }
+            
             
             pFrameRGB = av_frame_alloc();
             
@@ -290,57 +295,25 @@ int VideoLayer::getFrame()
                 return 0xDEADBEEF;
             }
             
-            avpicture_alloc((AVPicture *)pFrameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, pCodecCtx->width, pCodecCtx->height);
+            avpicture_alloc((AVPicture*)pFrameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, pCodecCtx->width, pCodecCtx->height);
             
             sws_scale(scalerCtx, pFrame->data, pFrame->linesize, 0, pFrame->height, pFrameRGB->data, pFrameRGB->linesize);
             
-            _texture->upload(pFrameRGB->data, ouzel::Size2(pFrame->width, pFrame->height));
-            
-            /*pOCodec = avcodec_find_encoder (AV_CODEC_ID_PNG);
-            
-            if (!pOCodec)
+            /*for (int i = 0; i < 1920 * 1080; ++i)
             {
-                ouzel::log("Could not find png encode");
-                return 0xDEADBEEF;
-            }
+                pFrameRGB->data[0][i + 0] = 255;
+                pFrameRGB->data[0][i + 1] = 255;
+                pFrameRGB->data[0][i + 2] = 255;
+                pFrameRGB->data[0][i + 3] = 255;
+            }*/
             
-            pOCodecCtx = avcodec_alloc_context3(pOCodec);
+            _texture->upload(pFrameRGB->data, ouzel::Size2(pFrameRGB->width, pFrameRGB->height));
             
-            if (!pOCodecCtx) {
-                ouzel::log("Failed to create codec context");
-                return 0xDEADBEEF;
-            }
-            
-            pOCodecCtx->bit_rate      = pCodecCtx->bit_rate;
-            pOCodecCtx->width         = pCodecCtx->width;
-            pOCodecCtx->height        = pCodecCtx->height;
-            //pOCodecCtx->pix_fmt       = pCodecCtx->pix_fmt;
-            pOCodecCtx->pix_fmt       = AV_PIX_FMT_RGBA; //AV_PIX_FMT_RGB24;
-            //pOCodecCtx->codec_id      = AV_CODEC_ID_PNG;
-            //pOCodecCtx->codec_type    = AVMEDIA_TYPE_VIDEO;
-            pOCodecCtx->time_base.num = pCodecCtx->time_base.num;
-            pOCodecCtx->time_base.den = pCodecCtx->time_base.den;
-            
-            packet = av_packet_alloc();*/
-            
-            
-            /*int got_packet;
-            
-            avcodec_encode_video2(pOCodecCtx, packet, pFrameRGB, &got_packet);
-            
-            if (!got_packet)
-            {
-                ouzel::log("Didn't get packet");
-                return 0xDEADBEEF;
-            }
-            
-            //FILE* f = fopen(out_name, "wb");
-            //fwrite(packet->data, packet->size, 1, f);
-            //fclose(f);
-            
-            _texture->upload(packet->data, ouzel::Size2(pOCodecCtx->width, pOCodecCtx->height));*/
+            av_frame_free(&pFrameRGB);
             
             rc = OK;
+            
+            break;
         }
     }
     
@@ -349,6 +322,8 @@ int VideoLayer::getFrame()
         return 0xDEADBEEF;
     }
 
+    // Free the YUV frame
+    if (pFrame) av_frame_free(&pFrame);
     
     return rc;
 }

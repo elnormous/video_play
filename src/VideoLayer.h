@@ -27,9 +27,9 @@ public:
     virtual void update(float delta) override;
     virtual void draw() override;
     
-    int get_frame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, AVFrame *pFrame, int videoStream, int64_t second);
-    float display_aspect_ratio(AVCodecContext *pCodecCtx);
-    int display_width(AVCodecContext *pCodecCtx);
+    int get_frame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream, int64_t second);
+    float display_aspect_ratio(AVCodecContext* pCodecCtx);
+    int display_width(AVCodecContext* pCodecCtx);
     
     int getFrame();
     
@@ -44,11 +44,7 @@ protected:
     AVFormatContext* pFormatCtx = nullptr;
     AVCodecContext* pCodecCtx = nullptr;
     AVCodec* pCodec = nullptr;
-    AVFrame* pFrame = nullptr;
     unsigned char* bufferAVIO = nullptr;
-    int need_flush = 0;
-    char value[10];
-    int threads = 2;
     int second = 0;
     AVCodecContext* pOCodecCtx = nullptr;
     AVCodec* pOCodec = nullptr;
