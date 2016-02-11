@@ -24,12 +24,10 @@ namespace ouzel
     {
         _eventHandler = std::make_shared<EventHandler>();
         
-        _eventHandler->keyDownHandler = std::bind(&Application::handleKeyDown, this, std::placeholders::_1, std::placeholders::_2);
-        _eventHandler->mouseMoveHandler = std::bind(&Application::handleMouseMove, this, std::placeholders::_1, std::placeholders::_2);
-        _eventHandler->touchBeginHandler = std::bind(&Application::handleTouch, this, std::placeholders::_1, std::placeholders::_2);
-        _eventHandler->touchMoveHandler = std::bind(&Application::handleTouch, this, std::placeholders::_1, std::placeholders::_2);
-        _eventHandler->touchEndHandler = std::bind(&Application::handleTouch, this, std::placeholders::_1, std::placeholders::_2);
-        _eventHandler->gamepadButtonChangeHandler = std::bind(&Application::handleGamepadButtonChange, this, std::placeholders::_1, std::placeholders::_2);
+        _eventHandler->keyboardHandler = std::bind(&Application::handleKeyboard, this, std::placeholders::_1, std::placeholders::_2);
+        _eventHandler->mouseHandler = std::bind(&Application::handleMouse, this, std::placeholders::_1, std::placeholders::_2);
+        _eventHandler->touchHandler = std::bind(&Application::handleTouch, this, std::placeholders::_1, std::placeholders::_2);
+        _eventHandler->gamepadHandler = std::bind(&Application::handleGamepad, this, std::placeholders::_1, std::placeholders::_2);
         
         Engine::getInstance()->getEventDispatcher()->addEventHandler(_eventHandler);
         
@@ -40,82 +38,89 @@ namespace ouzel
         Engine::getInstance()->getSceneManager()->setScene(scene);
         
         _layer = std::make_shared<VideoLayer>();
+        _layer->init();
         scene->addLayer(_layer);
         
-        _uiLayer = std::make_shared<ouzel::Layer>();
+        _uiLayer = Layer::create();
         scene->addLayer(_uiLayer);
         
         Engine::getInstance()->getInput()->startGamepadDiscovery();
     }
     
-    bool Application::handleKeyDown(const KeyboardEvent& event, VoidPtr const& sender) const
+    bool Application::handleKeyboard(const KeyboardEventPtr& event, VoidPtr const& sender) const
     {
-        Vector2 position = _layer->getCamera()->getPosition();
-        
-        switch (event.key)
+        if (event->type == Event::Type::KEY_DOWN)
         {
-            case KeyboardKey::UP:
-                position.y += 10.0f;
-                break;
-            case KeyboardKey::DOWN:
-                position.y -= 10.0f;
-                break;
-            case KeyboardKey::LEFT:
-                position.x -= 10.0f;
-                break;
-            case KeyboardKey::RIGHT:
-                position.x += 10.0f;
-                break;
-            case KeyboardKey::SPACE:
-                break;
-            case KeyboardKey::RETURN:
-                Engine::getInstance()->getRenderer()->resize(Size2(640.0f, 480.0f));
-                break;
-            case KeyboardKey::TAB:
-                break;
-            default:
-                break;
+            Vector2 position = _layer->getCamera()->getPosition();
+            
+            switch (event->key)
+            {
+                case KeyboardKey::UP:
+                    position.y += 10.0f;
+                    break;
+                case KeyboardKey::DOWN:
+                    position.y -= 10.0f;
+                    break;
+                case KeyboardKey::LEFT:
+                    position.x -= 10.0f;
+                    break;
+                case KeyboardKey::RIGHT:
+                    position.x += 10.0f;
+                    break;
+                case KeyboardKey::SPACE:
+                    break;
+                case KeyboardKey::RETURN:
+                    Engine::getInstance()->getRenderer()->resize(Size2(640.0f, 480.0f));
+                    break;
+                case KeyboardKey::TAB:
+                    break;
+                default:
+                    break;
+            }
+            
+            _layer->getCamera()->setPosition(position);
         }
         
-        _layer->getCamera()->setPosition(position);
-        
         return true;
     }
     
-    bool Application::handleMouseMove(const MouseEvent& event, VoidPtr const& sender) const
+    bool Application::handleMouse(const MouseEventPtr& event, VoidPtr const& sender) const
     {
         return true;
     }
     
-    bool Application::handleTouch(const TouchEvent& event, VoidPtr const& sender) const
+    bool Application::handleTouch(const TouchEventPtr& event, VoidPtr const& sender) const
     {
         return true;
     }
     
-    bool Application::handleGamepadButtonChange(const GamepadEvent& event, VoidPtr const& sender) const
+    bool Application::handleGamepad(const GamepadEventPtr& event, VoidPtr const& sender) const
     {
-        switch (event.button)
+        if (event->type == Event::Type::GAMEPAD_BUTTON_CHANGE)
         {
-            case GamepadButton::DPAD_UP:
-            case GamepadButton::LEFT_THUMB_UP:
-            case GamepadButton::RIGHT_THUMB_UP:
-                break;
-            case GamepadButton::DPAD_DOWN:
-            case GamepadButton::LEFT_THUMB_DOWN:
-            case GamepadButton::RIGHT_THUMB_DOWN:
-                break;
-            case GamepadButton::DPAD_LEFT:
-            case GamepadButton::LEFT_THUMB_LEFT:
-            case GamepadButton::RIGHT_THUMB_LEFT:
-                break;
-            case GamepadButton::DPAD_RIGHT:
-            case GamepadButton::LEFT_THUMB_RIGHT:
-            case GamepadButton::RIGHT_THUMB_RIGHT:
-                break;
-            case GamepadButton::A:
-                break;
-            default:
-                break;
+            switch (event->button)
+            {
+                case GamepadButton::DPAD_UP:
+                case GamepadButton::LEFT_THUMB_UP:
+                case GamepadButton::RIGHT_THUMB_UP:
+                    break;
+                case GamepadButton::DPAD_DOWN:
+                case GamepadButton::LEFT_THUMB_DOWN:
+                case GamepadButton::RIGHT_THUMB_DOWN:
+                    break;
+                case GamepadButton::DPAD_LEFT:
+                case GamepadButton::LEFT_THUMB_LEFT:
+                case GamepadButton::RIGHT_THUMB_LEFT:
+                    break;
+                case GamepadButton::DPAD_RIGHT:
+                case GamepadButton::LEFT_THUMB_RIGHT:
+                case GamepadButton::RIGHT_THUMB_RIGHT:
+                    break;
+                case GamepadButton::A:
+                    break;
+                default:
+                    break;
+            }
         }
         
         return true;

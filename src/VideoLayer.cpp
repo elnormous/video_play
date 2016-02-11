@@ -25,6 +25,33 @@ using namespace ouzel;
 
 VideoLayer::VideoLayer()
 {
+}
+
+VideoLayer::~VideoLayer()
+{
+    Engine::getInstance()->unscheduleUpdate(_updateCallback);
+    
+    // Free the YUV frame
+    if (pFrame) av_frame_free(&pFrame);
+    
+    if (pFrameRGB) av_frame_free(&pFrameRGB);
+    
+    if (scalerCtx) sws_freeContext(scalerCtx);
+    
+    // Close the codec
+    if (pCodecCtx) avcodec_close(pCodecCtx);
+    
+    // Close the video file
+    if (pFormatCtx) avformat_close_input(&pFormatCtx);
+}
+
+bool VideoLayer::init()
+{
+    _updateCallback = std::make_shared<UpdateCallback>();
+    _updateCallback->callback = std::bind(&VideoLayer::update, this, std::placeholders::_1);
+    
+    Engine::getInstance()->scheduleUpdate(_updateCallback);
+    
     _shader = Engine::getInstance()->getCache()->getShader(SHADER_TEXTURE);
     
 #ifdef OUZEL_PLATFORM_WINDOWS
@@ -56,14 +83,14 @@ VideoLayer::VideoLayer()
     if (!pFormatCtx)
     {
         ouzel::log("Couldn't alloc AVIO buffer\n");
-        return;
+        return false;
     }
     
     pFormatCtx->flags |= AVFMT_FLAG_NONBLOCK;
     
     if (Engine::getInstance()->getArgs().size() < 2)
     {
-        return;
+        return false;
     }
     
     std::string stream = Engine::getInstance()->getArgs()[1];
@@ -83,27 +110,27 @@ VideoLayer::VideoLayer()
     if ((ret = avformat_open_input(&pFormatCtx, stream.c_str(), NULL, &input_options)) != 0)
     {
         ouzel::log("Couldn't open file %s, error: %d\n", stream.c_str(), ret);
-        return;
+        return false;
     }
     
     // Retrieve stream information
     if (avformat_find_stream_info(pFormatCtx, NULL) < 0)
     {
         ouzel::log("Couldn't find stream information\n");
-        return;
+        return false;
     }
     
     if ((pFormatCtx->duration > 0) && ((((float_t) pFormatCtx->duration / AV_TIME_BASE))) < 0.1) {
         ouzel::log("seconds greater than duration\n");
         rc = ERROR;
-        return;
+        return false;
     }
     
     // Find the first video stream
     videoStream = av_find_best_stream(pFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, &pCodec, 0);
     if (videoStream == -1) {
         ouzel::log("Didn't find a video stream\n");
-        return;
+        return false;
     }
     
     // Get a pointer to the codec context for the video stream
@@ -118,7 +145,7 @@ VideoLayer::VideoLayer()
     // Open codec
     if ((avcodec_open2(pCodecCtx, pCodec, &dict)) < 0) {
         ouzel::log("Could not open codec\n");
-        return;
+        return false;
     }
     
     _texture = ouzel::Engine::getInstance()->getRenderer()->createTexture(Size2(pCodecCtx->width, pCodecCtx->height), true, false);
@@ -134,7 +161,7 @@ VideoLayer::VideoLayer()
     if (!scalerCtx)
     {
         printf("sws_getContext() failed\n");
-        return;
+        return false;
     }
     
     // Allocate video frame
@@ -143,7 +170,7 @@ VideoLayer::VideoLayer()
     if (pFrame == NULL)
     {
         ouzel::log("Failed to alloc frame\n");
-        return;
+        return false;
     }
     
     pFrameRGB = av_frame_alloc();
@@ -152,22 +179,8 @@ VideoLayer::VideoLayer()
     {
         printf("Failed to alloc frame\n");
     }
-}
-
-VideoLayer::~VideoLayer()
-{
-    // Free the YUV frame
-    if (pFrame) av_frame_free(&pFrame);
     
-    if (pFrameRGB) av_frame_free(&pFrameRGB);
-    
-    if (scalerCtx) sws_freeContext(scalerCtx);
-    
-    // Close the codec
-    if (pCodecCtx) avcodec_close(pCodecCtx);
-    
-    // Close the video file
-    if (pFormatCtx) avformat_close_input(&pFormatCtx);
+    return true;
 }
 
 void VideoLayer::update(float delta)

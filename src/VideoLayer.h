@@ -24,7 +24,9 @@ public:
     VideoLayer();
     virtual ~VideoLayer();
     
-    virtual void update(float delta) override;
+    virtual bool init() override;
+    
+    virtual void update(float delta);
     virtual void draw() override;
     
     int readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream);
@@ -36,6 +38,8 @@ protected:
     ouzel::MeshBufferPtr _mesh;
     
     uint32_t _uniModelViewProj;
+    
+    ouzel::UpdateCallbackPtr _updateCallback;
     
     int videoStream;
     AVFormatContext* pFormatCtx = nullptr;
