@@ -29,6 +29,12 @@
 		30EDFC351C6CADFF008E9753 /* VideoTextureNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 30EDFC331C6CADFF008E9753 /* VideoTextureNode.cpp */; };
 		30EDFC361C6CADFF008E9753 /* VideoTextureNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 30EDFC331C6CADFF008E9753 /* VideoTextureNode.cpp */; };
 		30EDFC371C6CADFF008E9753 /* VideoTextureNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 30EDFC331C6CADFF008E9753 /* VideoTextureNode.cpp */; };
+		30EDFC431C6CDC1A008E9753 /* button_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 30EDFC411C6CDC1A008E9753 /* button_down.png */; };
+		30EDFC441C6CDC1A008E9753 /* button_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 30EDFC411C6CDC1A008E9753 /* button_down.png */; };
+		30EDFC451C6CDC1A008E9753 /* button_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 30EDFC411C6CDC1A008E9753 /* button_down.png */; };
+		30EDFC461C6CDC1A008E9753 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 30EDFC421C6CDC1A008E9753 /* button.png */; };
+		30EDFC471C6CDC1A008E9753 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 30EDFC421C6CDC1A008E9753 /* button.png */; };
+		30EDFC481C6CDC1A008E9753 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 30EDFC421C6CDC1A008E9753 /* button.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +89,8 @@
 		304A8E0A1C237B95008B1151 /* native_play_osx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = native_play_osx.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30EDFC331C6CADFF008E9753 /* VideoTextureNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VideoTextureNode.cpp; sourceTree = "<group>"; };
 		30EDFC341C6CADFF008E9753 /* VideoTextureNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoTextureNode.h; sourceTree = "<group>"; };
+		30EDFC411C6CDC1A008E9753 /* button_down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_down.png; path = Resources/button_down.png; sourceTree = "<group>"; };
+		30EDFC421C6CDC1A008E9753 /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button.png; path = Resources/button.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -194,6 +202,7 @@
 				3047F7121C46A31300774E3D /* ouzel.xcodeproj */,
 				3047F7101C46A1C900774E3D /* src */,
 				3047F70F1C46A1B800774E3D /* Frameworks */,
+				30EDFC401C6CDC0F008E9753 /* Resources */,
 				304A8E0B1C237B95008B1151 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -206,6 +215,15 @@
 				303B76A01C355AA400FEDE92 /* native_play_tvos.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		30EDFC401C6CDC0F008E9753 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				30EDFC411C6CDC1A008E9753 /* button_down.png */,
+				30EDFC421C6CDC1A008E9753 /* button.png */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -335,6 +353,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3047F6CF1C469FBB00774E3D /* Assets.xcassets in Resources */,
+				30EDFC471C6CDC1A008E9753 /* button.png in Resources */,
+				30EDFC441C6CDC1A008E9753 /* button_down.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -343,6 +363,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3047F6DF1C469FBB00774E3D /* Assets.xcassets in Resources */,
+				30EDFC481C6CDC1A008E9753 /* button.png in Resources */,
+				30EDFC451C6CDC1A008E9753 /* button_down.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -351,6 +373,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3047F6D71C469FBB00774E3D /* Assets.xcassets in Resources */,
+				30EDFC461C6CDC1A008E9753 /* button.png in Resources */,
+				30EDFC431C6CDC1A008E9753 /* button_down.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

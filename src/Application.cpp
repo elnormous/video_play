@@ -50,6 +50,14 @@ namespace ouzel
         _uiLayer = Layer::create();
         scene->addLayer(_uiLayer);
         
+        ButtonPtr button = Button::create("button.png", "button.png", "button_down.png", "button.png", [videoNode](VoidPtr sender) {
+            videoNode->setVisible(!videoNode->isVisible());
+        });
+        button->setPosition(Vector2(-200.0f, -200.0f));
+        button->setScale(Vector2(0.5f, 0.5f));
+        button->setOpacity(0.5f);
+        _uiLayer->addChild(button);
+        
         Engine::getInstance()->getInput()->startGamepadDiscovery();
     }
     
