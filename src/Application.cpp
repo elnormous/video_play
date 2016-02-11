@@ -54,8 +54,7 @@ namespace ouzel
             videoNode->setVisible(!videoNode->isVisible());
         });
         button->setPosition(Vector2(-200.0f, -200.0f));
-        button->setScale(Vector2(0.5f, 0.5f));
-        button->setOpacity(0.5f);
+        button->setScale(Vector2(0.3f, 0.3f));
         _uiLayer->addChild(button);
         
         Engine::getInstance()->getInput()->startGamepadDiscovery();

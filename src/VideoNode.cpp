@@ -176,7 +176,7 @@ bool VideoNode::init()
     return true;
 }
 
-const float FPS = 24.0f;
+const float FPS = 25.0f;
 const float FRAME_INTERVAL = 1.0f / FPS;
 
 void VideoNode::update(float delta)
@@ -185,19 +185,32 @@ void VideoNode::update(float delta)
     
     _sinceLastFrame += delta;
     
-    if (_sinceLastFrame >= FRAME_INTERVAL)
+    while (_sinceLastFrame >= FRAME_INTERVAL)
     {
-        _sinceLastFrame = fmodf(_sinceLastFrame, FRAME_INTERVAL);
+        _sinceLastFrame -= FRAME_INTERVAL;
         
-        if (_frames.size())
+        if (!_frames.empty())
         {
             AVFrame* frame = _frames.front();
             _frames.pop();
             
-            _texture->upload(frame->data[0], ouzel::Size2(pFrame->width, pFrame->height));
+            if (_sinceLastFrame < FRAME_INTERVAL)
+            {
+                _texture->upload(frame->data[0], ouzel::Size2(pFrame->width, pFrame->height));
+            }
+            
+            log("Frame count: %d", _frames.size());
             
             if (frame) av_frame_free(&frame);
         }
+    }
+    
+    while (_frames.size() > 25)
+    {
+        AVFrame* frame = _frames.front();
+        _frames.pop();
+        
+        if (frame) av_frame_free(&frame);
     }
 }
 
@@ -249,13 +262,12 @@ int VideoNode::getFrame()
         
         AVFrame* pFrameRGB = av_frame_alloc();
         
-        avpicture_alloc((AVPicture*)pFrameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, pCodecCtx->width, pCodecCtx->height);
-        
-        
         if (pFrameRGB == NULL)
         {
             printf("Failed to alloc frame\n");
         }
+        
+        avpicture_alloc((AVPicture*)pFrameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, pCodecCtx->width, pCodecCtx->height);
         
         sws_scale(scalerCtx, pFrame->data, pFrame->linesize, 0, pFrame->height, pFrameRGB->data, pFrameRGB->linesize);
         
