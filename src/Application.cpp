@@ -2,7 +2,8 @@
 // This file is part of the Ouzel engine.
 
 #include "Application.h"
-#include "VideoLayer.h"
+#include "VideoNode.h"
+#include "VideoTextureLayer.h"
 
 namespace ouzel
 {    
@@ -37,9 +38,14 @@ namespace ouzel
         ScenePtr scene(new Scene());
         Engine::getInstance()->getSceneManager()->setScene(scene);
         
-        _layer = std::make_shared<VideoLayer>();
+        _layer = Layer::create();
+        //_layer = std::make_shared<VideoTextureLayer>();
         _layer->init();
         scene->addLayer(_layer);
+        
+        std::shared_ptr<VideoNode> videoNode = std::make_shared<VideoNode>();
+        videoNode->init();
+        _layer->addChild(videoNode);
         
         _uiLayer = Layer::create();
         scene->addLayer(_uiLayer);
@@ -49,9 +55,12 @@ namespace ouzel
     
     bool Application::handleKeyboard(const KeyboardEventPtr& event, VoidPtr const& sender) const
     {
-        if (event->type == Event::Type::KEY_DOWN)
+        if (event->type == Event::Type::KEY_DOWN ||
+            event->type == Event::Type::KEY_REPEAT)
         {
             Vector2 position = _layer->getCamera()->getPosition();
+            float rotation = _layer->getCamera()->getRotation();
+            float zoom = _layer->getCamera()->getZoom();
             
             switch (event->key)
             {
@@ -67,6 +76,19 @@ namespace ouzel
                 case KeyboardKey::RIGHT:
                     position.x += 10.0f;
                     break;
+                case KeyboardKey::KEY_1:
+                    rotation -= ouzel::TAU / 36.0f;
+                    break;
+                case KeyboardKey::KEY_2:
+                    rotation += ouzel::TAU / 36.0f;
+                    break;
+                case KeyboardKey::KEY_3:
+                    zoom -= 0.1f;
+                    break;
+                case KeyboardKey::KEY_4:
+                    zoom += 0.1f;
+                    break;
+                    
                 case KeyboardKey::SPACE:
                     break;
                 case KeyboardKey::RETURN:
@@ -79,6 +101,8 @@ namespace ouzel
             }
             
             _layer->getCamera()->setPosition(position);
+            _layer->getCamera()->setRotation(rotation);
+            _layer->getCamera()->setZoom(zoom);
         }
         
         return true;

@@ -6,7 +6,7 @@
 //  Copyright © 2016 Bool Games. All rights reserved.
 //
 
-#include "VideoLayer.h"
+#include "VideoNode.h"
 
 #include <stdio.h>
 
@@ -23,18 +23,16 @@
 
 using namespace ouzel;
 
-VideoLayer::VideoLayer()
+VideoNode::VideoNode()
 {
 }
 
-VideoLayer::~VideoLayer()
+VideoNode::~VideoNode()
 {
     Engine::getInstance()->unscheduleUpdate(_updateCallback);
     
     // Free the YUV frame
     if (pFrame) av_frame_free(&pFrame);
-    
-    if (pFrameRGB) av_frame_free(&pFrameRGB);
     
     if (scalerCtx) sws_freeContext(scalerCtx);
     
@@ -45,10 +43,10 @@ VideoLayer::~VideoLayer()
     if (pFormatCtx) avformat_close_input(&pFormatCtx);
 }
 
-bool VideoLayer::init()
+bool VideoNode::init()
 {
     _updateCallback = std::make_shared<UpdateCallback>();
-    _updateCallback->callback = std::bind(&VideoLayer::update, this, std::placeholders::_1);
+    _updateCallback->callback = std::bind(&VideoNode::update, this, std::placeholders::_1);
     
     Engine::getInstance()->scheduleUpdate(_updateCallback);
     
@@ -173,34 +171,52 @@ bool VideoLayer::init()
         return false;
     }
     
-    pFrameRGB = av_frame_alloc();
-    
-    if (pFrameRGB == NULL)
-    {
-        printf("Failed to alloc frame\n");
-    }
+    setScale(Vector2(pCodecCtx->width / 2.0f, pCodecCtx->height / 2.0f));
     
     return true;
 }
 
-void VideoLayer::update(float delta)
+const float FPS = 24.0f;
+const float FRAME_INTERVAL = 1.0f / FPS;
+
+void VideoNode::update(float delta)
 {
     getFrame();
+    
+    _sinceLastFrame += delta;
+    
+    if (_sinceLastFrame >= FRAME_INTERVAL)
+    {
+        _sinceLastFrame = fmodf(_sinceLastFrame, FRAME_INTERVAL);
+        
+        if (_frames.size())
+        {
+            AVFrame* frame = _frames.front();
+            _frames.pop();
+            
+            _texture->upload(frame->data[0], ouzel::Size2(pFrame->width, pFrame->height));
+            
+            if (frame) av_frame_free(&frame);
+        }
+    }
 }
 
-void VideoLayer::draw()
+void VideoNode::draw()
 {
-    Engine::getInstance()->getRenderer()->activateTexture(_texture, 0);
-    Engine::getInstance()->getRenderer()->activateShader(_shader);
-    
-    Matrix4 modelViewProj = Matrix4::identity();
-    
-    _shader->setVertexShaderConstant(_uniModelViewProj, { modelViewProj });
-    
-    Engine::getInstance()->getRenderer()->drawMeshBuffer(_mesh);
+    if (LayerPtr layer = _layer.lock())
+    {
+        Engine::getInstance()->getRenderer()->activateTexture(_texture, 0);
+        Engine::getInstance()->getRenderer()->activateShader(_shader);
+        
+        Matrix4 modelViewProj = layer->getCamera()->getViewProjection() * _transform;
+        
+        _shader->setVertexShaderConstant(_uniModelViewProj, { modelViewProj });
+        
+        Engine::getInstance()->getRenderer()->drawMeshBuffer(_mesh);
+    }
 }
 
-int VideoLayer::readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream)
+int VideoNode::readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream)
 {
     AVPacket packet;
     int      frameFinished = 0;
@@ -225,17 +241,25 @@ int VideoLayer::readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx
     return rc;
 }
 
-int VideoLayer::getFrame()
+int VideoNode::getFrame()
 {
     int rc;
 
     if ((rc = readFrame(pFormatCtx, pCodecCtx, pFrame, videoStream)) == 0) {
         
+        AVFrame* pFrameRGB = av_frame_alloc();
+        
         avpicture_alloc((AVPicture*)pFrameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, pCodecCtx->width, pCodecCtx->height);
+        
+        
+        if (pFrameRGB == NULL)
+        {
+            printf("Failed to alloc frame\n");
+        }
         
         sws_scale(scalerCtx, pFrame->data, pFrame->linesize, 0, pFrame->height, pFrameRGB->data, pFrameRGB->linesize);
         
-        _texture->upload(pFrameRGB->data[0], ouzel::Size2(pFrame->width, pFrame->height));
+        _frames.push(pFrameRGB);
         
         rc = OK;
     }

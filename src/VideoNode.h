@@ -18,13 +18,13 @@ extern "C"
 #include <libavcodec/avcodec.h>
 }
 
-class VideoLayer: public ouzel::Layer
+class VideoNode: public ouzel::Node
 {
 public:
-    VideoLayer();
-    virtual ~VideoLayer();
+    VideoNode();
+    virtual ~VideoNode();
     
-    virtual bool init() override;
+    virtual bool init();
     
     virtual void update(float delta);
     virtual void draw() override;
@@ -46,7 +46,9 @@ protected:
     AVCodecContext* pCodecCtx = nullptr;
     AVCodec* pCodec = nullptr;
     AVFrame* pFrame = nullptr;
-    AVFrame* pFrameRGB = nullptr;
     struct SwsContext* scalerCtx = nullptr;
     AVDictionary* input_options = nullptr;
+    
+    std::queue<AVFrame*> _frames;
+    float _sinceLastFrame = 0.0f;
 };
