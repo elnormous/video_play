@@ -199,8 +199,6 @@ void VideoNode::update(float delta)
                 _texture->upload(frame->data[0], ouzel::Size2(pFrame->width, pFrame->height));
             }
             
-            log("Frame count: %d", _frames.size());
-            
             if (frame) av_frame_free(&frame);
         }
     }
