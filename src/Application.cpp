@@ -3,7 +3,7 @@
 
 #include "Application.h"
 #include "VideoNode.h"
-#include "VideoTextureLayer.h"
+#include "VideoTextureNode.h"
 
 namespace ouzel
 {    
@@ -39,11 +39,11 @@ namespace ouzel
         Engine::getInstance()->getSceneManager()->setScene(scene);
         
         _layer = Layer::create();
-        //_layer = std::make_shared<VideoTextureLayer>();
         _layer->init();
         scene->addLayer(_layer);
         
         std::shared_ptr<VideoNode> videoNode = std::make_shared<VideoNode>();
+        //std::shared_ptr<VideoTextureNode> videoNode = std::make_shared<VideoTextureNode>();
         videoNode->init();
         _layer->addChild(videoNode);
         

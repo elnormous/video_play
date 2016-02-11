@@ -8,13 +8,13 @@
 
 #pragma once
 
-class VideoTextureLayer: public ouzel::Layer
+class VideoTextureNode: public ouzel::Node
 {
 public:
-    VideoTextureLayer();
-    virtual ~VideoTextureLayer();
+    VideoTextureNode();
+    virtual ~VideoTextureNode();
     
-    virtual bool init() override;
+    virtual bool init();
     
     virtual void update(float delta);
     virtual void draw() override;

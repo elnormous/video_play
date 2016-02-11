@@ -6,23 +6,23 @@
 //  Copyright © 2016 Bool Games. All rights reserved.
 //
 
-#include "VideoTextureLayer.h"
+#include "VideoTextureNode.h"
 
 using namespace ouzel;
 
-VideoTextureLayer::VideoTextureLayer()
+VideoTextureNode::VideoTextureNode()
 {
 }
 
-VideoTextureLayer::~VideoTextureLayer()
+VideoTextureNode::~VideoTextureNode()
 {
     Engine::getInstance()->unscheduleUpdate(_updateCallback);
 }
 
-bool VideoTextureLayer::init()
+bool VideoTextureNode::init()
 {
     _updateCallback = std::make_shared<UpdateCallback>();
-    _updateCallback->callback = std::bind(&VideoTextureLayer::update, this, std::placeholders::_1);
+    _updateCallback->callback = std::bind(&VideoTextureNode::update, this, std::placeholders::_1);
     
     Engine::getInstance()->scheduleUpdate(_updateCallback);
     
@@ -52,12 +52,12 @@ bool VideoTextureLayer::init()
     return true;
 }
 
-void VideoTextureLayer::update(float delta)
+void VideoTextureNode::update(float delta)
 {
     
 }
 
-void VideoTextureLayer::draw()
+void VideoTextureNode::draw()
 {
     Engine::getInstance()->getRenderer()->activateTexture(_texture, 0);
     Engine::getInstance()->getRenderer()->activateShader(_shader);
