@@ -29,10 +29,10 @@ public:
     virtual void update(float delta);
     virtual void draw() override;
     
+protected:
     int readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream);
     int getFrame();
     
-protected:
     ouzel::TexturePtr _texture;
     ouzel::ShaderPtr _shader;
     ouzel::MeshBufferPtr _mesh;

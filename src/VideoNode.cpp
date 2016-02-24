@@ -199,7 +199,11 @@ void VideoNode::update(float delta)
                 _texture->upload(frame->data[0], ouzel::Size2(frame->width, frame->height));
             }
             
-            if (frame) av_frame_free(&frame);
+            if (frame)
+            {
+                avpicture_free((AVPicture*)frame);
+                av_frame_free(&frame);
+            }
         }
     }
     
@@ -236,6 +240,9 @@ int VideoNode::readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx,
     rc = ERROR;
     // Find the nearest frame
     while (!frameFinished && av_read_frame(pFormatCtx, &packet) >= 0) {
+        
+        log("Packet pts: %" PRId64, packet.pts);
+        
         // Is this a packet from the video stream?
         if (packet.stream_index == videoStream) {
             // Decode video frame
@@ -244,6 +251,8 @@ int VideoNode::readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx,
             if (frameFinished) {
                 rc = OK;
             }
+            
+            log("Frame decoded");
         }
         // Free the packet that was allocated by av_read_frame
         av_packet_unref(&packet);
