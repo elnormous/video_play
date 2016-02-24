@@ -3,7 +3,7 @@
 
 #include "Application.h"
 #include "VideoNode.h"
-#include "VideoTextureNode.h"
+//#include "VideoTextureNode.h"
 
 namespace ouzel
 {    
@@ -50,7 +50,7 @@ namespace ouzel
         _uiLayer = Layer::create();
         scene->addLayer(_uiLayer);
         
-        ButtonPtr button = Button::create("button.png", "button.png", "button_down.png", "button.png", [videoNode](VoidPtr sender) {
+        ButtonPtr button = Button::create("button.png", "button.png", "button_down.png", "button.png", "", Color(255, 255, 255, 255), "", [videoNode](VoidPtr sender) {
             videoNode->setVisible(!videoNode->isVisible());
         });
         button->setPosition(Vector2(-200.0f, -200.0f));

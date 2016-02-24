@@ -9,7 +9,7 @@
 #include "VideoNode.h"
 
 #include <stdio.h>
-
+#include <inttypes.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -196,7 +196,7 @@ void VideoNode::update(float delta)
             
             if (_sinceLastFrame < FRAME_INTERVAL)
             {
-                _texture->upload(frame->data[0], ouzel::Size2(pFrame->width, pFrame->height));
+                _texture->upload(frame->data[0], ouzel::Size2(frame->width, frame->height));
             }
             
             if (frame) av_frame_free(&frame);
@@ -267,7 +267,12 @@ int VideoNode::getFrame()
         
         avpicture_alloc((AVPicture*)pFrameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, pCodecCtx->width, pCodecCtx->height);
         
+        pFrameRGB->width = pFrame->width;
+        pFrameRGB->height = pFrame->height;
+        
         sws_scale(scalerCtx, pFrame->data, pFrame->linesize, 0, pFrame->height, pFrameRGB->data, pFrameRGB->linesize);
+        
+        log("pts: %" PRId64 " (%" PRId64 "), pts: %" PRId64 ", (%" PRId64 ")", pFrame->pts, pFrame->pkt_pts, pFrameRGB->pts, pFrameRGB->pkt_pts);
         
         _frames.push(pFrameRGB);
         

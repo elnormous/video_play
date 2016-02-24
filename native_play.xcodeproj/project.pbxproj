@@ -26,9 +26,6 @@
 		3047F7311C46A7BD00774E3D /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F7301C46A7BD00774E3D /* CoreVideo.framework */; };
 		3047F7331C46A7C500774E3D /* VideoDecodeAcceleration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F7321C46A7C500774E3D /* VideoDecodeAcceleration.framework */; };
 		3047F7351C46A7CC00774E3D /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F7341C46A7CC00774E3D /* CoreFoundation.framework */; };
-		30EDFC351C6CADFF008E9753 /* VideoTextureNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 30EDFC331C6CADFF008E9753 /* VideoTextureNode.cpp */; };
-		30EDFC361C6CADFF008E9753 /* VideoTextureNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 30EDFC331C6CADFF008E9753 /* VideoTextureNode.cpp */; };
-		30EDFC371C6CADFF008E9753 /* VideoTextureNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 30EDFC331C6CADFF008E9753 /* VideoTextureNode.cpp */; };
 		30EDFC431C6CDC1A008E9753 /* button_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 30EDFC411C6CDC1A008E9753 /* button_down.png */; };
 		30EDFC441C6CDC1A008E9753 /* button_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 30EDFC411C6CDC1A008E9753 /* button_down.png */; };
 		30EDFC451C6CDC1A008E9753 /* button_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 30EDFC411C6CDC1A008E9753 /* button_down.png */; };
@@ -388,7 +385,6 @@
 				3047F6D51C469FBB00774E3D /* main.cpp in Sources */,
 				3047F72B1C46A4EA00774E3D /* VideoNode.cpp in Sources */,
 				3047F6CC1C469FBB00774E3D /* Application.cpp in Sources */,
-				30EDFC361C6CADFF008E9753 /* VideoTextureNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -399,7 +395,6 @@
 				3047F6D61C469FBB00774E3D /* main.cpp in Sources */,
 				3047F72C1C46A4EA00774E3D /* VideoNode.cpp in Sources */,
 				3047F6CD1C469FBB00774E3D /* Application.cpp in Sources */,
-				30EDFC371C6CADFF008E9753 /* VideoTextureNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,7 +405,6 @@
 				3047F6D41C469FBB00774E3D /* main.cpp in Sources */,
 				3047F72A1C46A4EA00774E3D /* VideoNode.cpp in Sources */,
 				3047F6CB1C469FBB00774E3D /* Application.cpp in Sources */,
-				30EDFC351C6CADFF008E9753 /* VideoTextureNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
