@@ -257,7 +257,7 @@ bool VideoNode::readFrame()
                 
                 if (pFrame->pts == AV_NOPTS_VALUE)
                 {
-                    log("No pts");
+                    log("No pts, pkt_pts: %" PRId64, pFrame->pkt_pts);
                 }
                 else
                 {
