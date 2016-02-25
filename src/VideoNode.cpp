@@ -281,7 +281,7 @@ int VideoNode::getFrame()
         
         sws_scale(scalerCtx, pFrame->data, pFrame->linesize, 0, pFrame->height, pFrameRGB->data, pFrameRGB->linesize);
         
-        log("pts: %" PRId64 " (%" PRId64 "), pts: %" PRId64 ", (%" PRId64 ")", pFrame->pts, pFrame->pkt_pts, pFrameRGB->pts, pFrameRGB->pkt_pts);
+        log("pts: %" PRId64 " , pkt_pts: %" PRId64, pFrame->pts, pFrame->pkt_pts);
         
         _frames.push(pFrameRGB);
         
