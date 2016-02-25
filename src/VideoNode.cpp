@@ -98,18 +98,22 @@ bool VideoNode::init()
                  NULL, 0, NULL,
                  NULL, 0, stream.c_str());
     
+    AVDictionary* inputOptions = nullptr;
+    
     if (strcmp(proto, "rtmp") == 0)
     {
-        av_dict_set(&input_options, "rtmp_live", "live", 0);
+        av_dict_set(&inputOptions, "rtmp_live", "live", 0);
     }
     
     // Open video file
     int ret;
-    if ((ret = avformat_open_input(&pFormatCtx, stream.c_str(), NULL, &input_options)) != 0)
+    if ((ret = avformat_open_input(&pFormatCtx, stream.c_str(), NULL, &inputOptions)) != 0)
     {
         ouzel::log("Couldn't open file %s, error: %d\n", stream.c_str(), ret);
         return false;
     }
+    
+    av_dict_free(&inputOptions);
     
     // Retrieve stream information
     if (avformat_find_stream_info(pFormatCtx, NULL) < 0)

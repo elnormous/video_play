@@ -46,7 +46,6 @@ protected:
     AVCodec* pCodec = nullptr;
     AVFrame* pFrame = nullptr;
     struct SwsContext* scalerCtx = nullptr;
-    AVDictionary* input_options = nullptr;
     
     std::queue<AVFrame*> _frames;
     float _sinceLastFrame = 0.0f;
