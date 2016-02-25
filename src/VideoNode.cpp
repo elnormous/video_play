@@ -118,7 +118,8 @@ bool VideoNode::init()
         return false;
     }
     
-    if ((pFormatCtx->duration > 0) && ((((float_t) pFormatCtx->duration / AV_TIME_BASE))) < 0.1) {
+    if ((pFormatCtx->duration > 0) && ((((float_t) pFormatCtx->duration / AV_TIME_BASE))) < 0.1)
+    {
         ouzel::log("seconds greater than duration\n");
         rc = ERROR;
         return false;
@@ -126,7 +127,8 @@ bool VideoNode::init()
     
     // Find the first video stream
     videoStream = av_find_best_stream(pFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, &pCodec, 0);
-    if (videoStream == -1) {
+    if (videoStream == -1)
+    {
         ouzel::log("Didn't find a video stream\n");
         return false;
     }
@@ -141,7 +143,8 @@ bool VideoNode::init()
     av_dict_set(&dict, "threads", value, 0);
     
     // Open codec
-    if ((avcodec_open2(pCodecCtx, pCodec, &dict)) < 0) {
+    if ((avcodec_open2(pCodecCtx, pCodec, &dict)) < 0)
+    {
         ouzel::log("Could not open codec\n");
         return false;
     }
@@ -237,17 +240,19 @@ bool VideoNode::readFrame()
     AVPacket packet;
 
     // Find the nearest frame
-    if (av_read_frame(pFormatCtx, &packet) >= 0) {
-        
+    if (av_read_frame(pFormatCtx, &packet) >= 0)
+    {
         log("Packet pts: %" PRId64, packet.pts);
         
         // Is this a packet from the video stream?
-        if (packet.stream_index == videoStream) {
-            int      frameFinished = 0;
+        if (packet.stream_index == videoStream)
+        {
+            int frameFinished = 0;
             // Decode video frame
             avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
             // Did we get a video frame?
-            if (frameFinished) {
+            if (frameFinished)
+            {
                 log("Frame decoded");
                 
                 AVFrame* pFrameRGB = av_frame_alloc();
