@@ -80,7 +80,7 @@ bool VideoNode::init()
     pFormatCtx = avformat_alloc_context();
     if (!pFormatCtx)
     {
-        ouzel::log("Couldn't alloc AVIO buffer\n");
+        log("Couldn't alloc AVIO buffer");
         return false;
     }
     
@@ -109,7 +109,7 @@ bool VideoNode::init()
     int ret;
     if ((ret = avformat_open_input(&pFormatCtx, stream.c_str(), NULL, &inputOptions)) != 0)
     {
-        ouzel::log("Couldn't open file %s, error: %d\n", stream.c_str(), ret);
+        log("Couldn't open file %s, error: %d", stream.c_str(), ret);
         return false;
     }
     
@@ -118,13 +118,13 @@ bool VideoNode::init()
     // Retrieve stream information
     if (avformat_find_stream_info(pFormatCtx, NULL) < 0)
     {
-        ouzel::log("Couldn't find stream information\n");
+        log("Couldn't find stream information");
         return false;
     }
     
     if ((pFormatCtx->duration > 0) && ((((float_t) pFormatCtx->duration / AV_TIME_BASE))) < 0.1)
     {
-        ouzel::log("seconds greater than duration\n");
+        log("seconds greater than duration");
         rc = ERROR;
         return false;
     }
@@ -133,7 +133,7 @@ bool VideoNode::init()
     videoStream = av_find_best_stream(pFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, &pCodec, 0);
     if (videoStream == -1)
     {
-        ouzel::log("Didn't find a video stream\n");
+        ouzel::log("Didn't find a video stream");
         return false;
     }
     
@@ -149,7 +149,7 @@ bool VideoNode::init()
     // Open codec
     if ((avcodec_open2(pCodecCtx, pCodec, &dict)) < 0)
     {
-        ouzel::log("Could not open codec\n");
+        log("Could not open codec");
         return false;
     }
     
@@ -165,7 +165,7 @@ bool VideoNode::init()
                                NULL, NULL, NULL);
     if (!scalerCtx)
     {
-        printf("sws_getContext() failed\n");
+        log("sws_getContext() failed");
         return false;
     }
     
@@ -174,7 +174,7 @@ bool VideoNode::init()
     
     if (pFrame == NULL)
     {
-        ouzel::log("Failed to alloc frame\n");
+        log("Failed to alloc frame");
         return false;
     }
     
