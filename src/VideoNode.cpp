@@ -231,47 +231,45 @@ void VideoNode::draw()
     }
 }
 
-int VideoNode::readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream)
+bool VideoNode::readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream)
 {
     AVPacket packet;
-    int      frameFinished = 0;
-    int      rc;
-    
-    rc = ERROR;
+
     // Find the nearest frame
-    while (!frameFinished && av_read_frame(pFormatCtx, &packet) >= 0) {
+    if (av_read_frame(pFormatCtx, &packet) >= 0) {
         
         log("Packet pts: %" PRId64, packet.pts);
         
         // Is this a packet from the video stream?
         if (packet.stream_index == videoStream) {
+            int      frameFinished = 0;
             // Decode video frame
             avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
             // Did we get a video frame?
             if (frameFinished) {
-                rc = OK;
+                log("Frame decoded");
+                return true;
             }
             
-            log("Frame decoded");
         }
         // Free the packet that was allocated by av_read_frame
         av_packet_unref(&packet);
     }
     
-    return rc;
+    return false;
 }
 
 int VideoNode::getFrame()
 {
-    int rc;
+    int rc = ERROR;
 
-    if ((rc = readFrame(pFormatCtx, pCodecCtx, pFrame, videoStream)) == 0) {
-        
+    if (readFrame(pFormatCtx, pCodecCtx, pFrame, videoStream))
+    {
         AVFrame* pFrameRGB = av_frame_alloc();
         
         if (pFrameRGB == NULL)
         {
-            printf("Failed to alloc frame\n");
+            log("Failed to alloc frame");
         }
         
         avpicture_alloc((AVPicture*)pFrameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, pCodecCtx->width, pCodecCtx->height);
@@ -290,7 +288,7 @@ int VideoNode::getFrame()
     
     if (rc != OK)
     {
-        ouzel::log("Failed to get frame\n");
+        log("Failed to get frame");
         return 0xDEADBEEF;
     }
     
