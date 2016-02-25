@@ -255,6 +255,15 @@ bool VideoNode::readFrame()
             {
                 log("Frame decoded");
                 
+                if (pFrame->pts == AV_NOPTS_VALUE)
+                {
+                    log("No pts");
+                }
+                else
+                {
+                    log("pts: %" PRId64 " , pkt_pts: %" PRId64, pFrame->pts, pFrame->pkt_pts);
+                }
+                
                 AVFrame* pFrameRGB = av_frame_alloc();
                 
                 if (pFrameRGB == NULL)
@@ -268,8 +277,6 @@ bool VideoNode::readFrame()
                 pFrameRGB->height = pFrame->height;
                 
                 sws_scale(scalerCtx, pFrame->data, pFrame->linesize, 0, pFrame->height, pFrameRGB->data, pFrameRGB->linesize);
-                
-                log("pts: %" PRId64 " , pkt_pts: %" PRId64, pFrame->pts, pFrame->pkt_pts);
                 
                 _frames.push(pFrameRGB);
                 
