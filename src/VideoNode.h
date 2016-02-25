@@ -30,8 +30,7 @@ public:
     virtual void draw() override;
     
 protected:
-    bool readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream);
-    int getFrame();
+    bool readFrame();
     
     ouzel::TexturePtr _texture;
     ouzel::ShaderPtr _shader;

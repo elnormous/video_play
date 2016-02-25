@@ -181,7 +181,7 @@ const float FRAME_INTERVAL = 1.0f / FPS;
 
 void VideoNode::update(float delta)
 {
-    getFrame();
+    readFrame();
     
     _sinceLastFrame += delta;
     
@@ -231,8 +231,9 @@ void VideoNode::draw()
     }
 }
 
-bool VideoNode::readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx, AVFrame* pFrame, int videoStream)
+bool VideoNode::readFrame()
 {
+    bool result = false;
     AVPacket packet;
 
     // Find the nearest frame
@@ -248,7 +249,26 @@ bool VideoNode::readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx
             // Did we get a video frame?
             if (frameFinished) {
                 log("Frame decoded");
-                return true;
+                
+                AVFrame* pFrameRGB = av_frame_alloc();
+                
+                if (pFrameRGB == NULL)
+                {
+                    log("Failed to alloc frame");
+                }
+                
+                avpicture_alloc((AVPicture*)pFrameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, pCodecCtx->width, pCodecCtx->height);
+                
+                pFrameRGB->width = pFrame->width;
+                pFrameRGB->height = pFrame->height;
+                
+                sws_scale(scalerCtx, pFrame->data, pFrame->linesize, 0, pFrame->height, pFrameRGB->data, pFrameRGB->linesize);
+                
+                log("pts: %" PRId64 " , pkt_pts: %" PRId64, pFrame->pts, pFrame->pkt_pts);
+                
+                _frames.push(pFrameRGB);
+                
+                result = true;
             }
             
         }
@@ -256,41 +276,5 @@ bool VideoNode::readFrame(AVFormatContext* pFormatCtx, AVCodecContext* pCodecCtx
         av_packet_unref(&packet);
     }
     
-    return false;
-}
-
-int VideoNode::getFrame()
-{
-    int rc = ERROR;
-
-    if (readFrame(pFormatCtx, pCodecCtx, pFrame, videoStream))
-    {
-        AVFrame* pFrameRGB = av_frame_alloc();
-        
-        if (pFrameRGB == NULL)
-        {
-            log("Failed to alloc frame");
-        }
-        
-        avpicture_alloc((AVPicture*)pFrameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, pCodecCtx->width, pCodecCtx->height);
-        
-        pFrameRGB->width = pFrame->width;
-        pFrameRGB->height = pFrame->height;
-        
-        sws_scale(scalerCtx, pFrame->data, pFrame->linesize, 0, pFrame->height, pFrameRGB->data, pFrameRGB->linesize);
-        
-        log("pts: %" PRId64 " , pkt_pts: %" PRId64, pFrame->pts, pFrame->pkt_pts);
-        
-        _frames.push(pFrameRGB);
-        
-        rc = OK;
-    }
-    
-    if (rc != OK)
-    {
-        log("Failed to get frame");
-        return 0xDEADBEEF;
-    }
-    
-    return rc;
+    return result;
 }
