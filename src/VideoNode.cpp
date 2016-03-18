@@ -8,8 +8,8 @@
 
 #include "VideoNode.h"
 
-#include <stdio.h>
-#include <inttypes.h>
+#include <cstdio>
+#include <cinttypes>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
