@@ -1,9 +1,5 @@
 //
-//  VideoLayer.hpp
 //  native_play
-//
-//  Created by Elviss Strazdins on 13/01/16.
-//  Copyright © 2016 Bool Games. All rights reserved.
 //
 
 #pragma once
