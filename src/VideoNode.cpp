@@ -15,13 +15,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define OK 0
-#define ERROR -1
-
-#define BUFFER_SIZE 1024 * 8
-#define MEMORY_STEP 1024
-
 using namespace ouzel;
+using namespace scene;
+using namespace video;
 
 VideoNode::VideoNode()
 {
@@ -75,8 +71,6 @@ bool VideoNode::init()
     av_register_all();
     av_log_set_level(AV_LOG_ERROR);
     
-    int rc = ERROR;
-    
     pFormatCtx = avformat_alloc_context();
     if (!pFormatCtx)
     {
@@ -86,12 +80,12 @@ bool VideoNode::init()
     
     pFormatCtx->flags |= AVFMT_FLAG_NONBLOCK;
     
-    if (Engine::getInstance()->getArgs().size() < 2)
+    if (getArgs().size() < 2)
     {
         return false;
     }
     
-    std::string stream = Engine::getInstance()->getArgs()[1];
+    std::string stream = getArgs()[1];
     
     char proto[8];
     av_url_split(proto, sizeof(proto), NULL, 0,
@@ -125,7 +119,6 @@ bool VideoNode::init()
     if ((pFormatCtx->duration > 0) && ((((float_t) pFormatCtx->duration / AV_TIME_BASE))) < 0.1)
     {
         log("seconds greater than duration");
-        rc = ERROR;
         return false;
     }
     

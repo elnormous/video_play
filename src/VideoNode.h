@@ -18,7 +18,7 @@ extern "C"
 #include <libavcodec/avcodec.h>
 }
 
-class VideoNode: public ouzel::Node
+class VideoNode: public ouzel::scene::Node
 {
 public:
     VideoNode();
@@ -32,9 +32,9 @@ public:
 protected:
     bool readFrame();
     
-    ouzel::TexturePtr _texture;
-    ouzel::ShaderPtr _shader;
-    ouzel::MeshBufferPtr _mesh;
+    ouzel::video::TexturePtr _texture;
+    ouzel::video::ShaderPtr _shader;
+    ouzel::video::MeshBufferPtr _mesh;
     
     uint32_t _uniModelViewProj;
     

@@ -3,9 +3,14 @@
 
 #include "Application.h"
 
-ouzel::AppPtr ouzelMain(std::vector<std::string> const& args)
+void ouzelMain(std::vector<std::string> const& args)
 {
-    std::shared_ptr<ouzel::Application> application(new ouzel::Application());
+    ouzel::Settings settings;
+    settings.size = ouzel::Size2(800.0f, 600.0f);
+    settings.resizable = true;
     
-    return application;
+    ouzel::Engine::getInstance()->init(settings);
+    
+    std::shared_ptr<Application> application(new Application());
+    ouzel::Engine::getInstance()->setApp(application);
 }
