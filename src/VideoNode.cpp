@@ -100,6 +100,7 @@ bool VideoNode::init()
     if ((ret = avformat_open_input(&_formatCtx, stream.c_str(), NULL, &inputOptions)) != 0)
     {
         log("Couldn't open file %s, error: %d", stream.c_str(), ret);
+        av_dict_free(&inputOptions);
         return false;
     }
     
