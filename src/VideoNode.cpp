@@ -24,15 +24,15 @@ VideoNode::~VideoNode()
     Engine::getInstance()->unscheduleUpdate(_updateCallback);
     
     // Free the YUV frame
-    if (pFrame) av_frame_free(&pFrame);
+    if (_frame) av_frame_free(&_frame);
     
-    if (scalerCtx) sws_freeContext(scalerCtx);
+    if (_scalerCtx) sws_freeContext(_scalerCtx);
     
     // Close the codec
-    if (pCodecCtx) avcodec_close(pCodecCtx);
+    if (_codecCtx) avcodec_close(_codecCtx);
     
     // Close the video file
-    if (pFormatCtx) avformat_close_input(&pFormatCtx);
+    if (_formatCtx) avformat_close_input(&_formatCtx);
 }
 
 bool VideoNode::init()
@@ -67,14 +67,14 @@ bool VideoNode::init()
     av_register_all();
     av_log_set_level(AV_LOG_ERROR);
     
-    pFormatCtx = avformat_alloc_context();
-    if (!pFormatCtx)
+    _formatCtx = avformat_alloc_context();
+    if (!_formatCtx)
     {
-        log("Couldn't alloc AVIO buffer");
+        log("Couldn't alloc avformat context");
         return false;
     }
     
-    pFormatCtx->flags |= AVFMT_FLAG_NONBLOCK;
+    _formatCtx->flags |= AVFMT_FLAG_NONBLOCK;
     
     if (getArgs().size() < 2)
     {
@@ -97,7 +97,7 @@ bool VideoNode::init()
     
     // Open video file
     int ret;
-    if ((ret = avformat_open_input(&pFormatCtx, stream.c_str(), NULL, &inputOptions)) != 0)
+    if ((ret = avformat_open_input(&_formatCtx, stream.c_str(), NULL, &inputOptions)) != 0)
     {
         log("Couldn't open file %s, error: %d", stream.c_str(), ret);
         return false;
@@ -106,20 +106,20 @@ bool VideoNode::init()
     av_dict_free(&inputOptions);
     
     // Retrieve stream information
-    if (avformat_find_stream_info(pFormatCtx, NULL) < 0)
+    if (avformat_find_stream_info(_formatCtx, NULL) < 0)
     {
         log("Couldn't find stream information");
         return false;
     }
     
-    if ((pFormatCtx->duration > 0) && ((((float_t) pFormatCtx->duration / AV_TIME_BASE))) < 0.1)
+    if ((_formatCtx->duration > 0) && ((((float_t)_formatCtx->duration / AV_TIME_BASE))) < 0.1)
     {
         log("seconds greater than duration");
         return false;
     }
     
     // Find the first video stream
-    videoStream = av_find_best_stream(pFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, &pCodec, 0);
+    videoStream = av_find_best_stream(_formatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, &_codec, 0);
     if (videoStream == -1)
     {
         ouzel::log("Didn't find a video stream");
@@ -127,7 +127,7 @@ bool VideoNode::init()
     }
     
     // Get a pointer to the codec context for the video stream
-    pCodecCtx = pFormatCtx->streams[videoStream]->codec;
+    _codecCtx = _formatCtx->streams[videoStream]->codec;
     
     int threads = 2;
     char value[10];
@@ -136,38 +136,38 @@ bool VideoNode::init()
     av_dict_set(&dict, "threads", value, 0);
     
     // Open codec
-    if ((avcodec_open2(pCodecCtx, pCodec, &dict)) < 0)
+    if ((avcodec_open2(_codecCtx, _codec, &dict)) < 0)
     {
         log("Could not open codec");
         return false;
     }
     
-    _texture = ouzel::Engine::getInstance()->getRenderer()->createTexture(Size2(pCodecCtx->width, pCodecCtx->height), true, false);
+    _texture = ouzel::Engine::getInstance()->getRenderer()->createTexture(Size2(_codecCtx->width, _codecCtx->height), true, false);
     
-    scalerCtx = sws_getContext(pCodecCtx->width,
-                               pCodecCtx->height,
-                               pCodecCtx->pix_fmt,
-                               pCodecCtx->width,
-                               pCodecCtx->height,
-                               AV_PIX_FMT_RGBA, //AV_PIX_FMT_RGB24,
-                               SWS_BILINEAR, //SWS_BICUBIC
-                               NULL, NULL, NULL);
-    if (!scalerCtx)
+    _scalerCtx = sws_getContext(_codecCtx->width,
+                                _codecCtx->height,
+                                _codecCtx->pix_fmt,
+                                _codecCtx->width,
+                                _codecCtx->height,
+                                AV_PIX_FMT_RGBA, //AV_PIX_FMT_RGB24,
+                                SWS_BILINEAR, //SWS_BICUBIC
+                                NULL, NULL, NULL);
+    if (!_scalerCtx)
     {
         log("sws_getContext() failed");
         return false;
     }
     
     // Allocate video frame
-    pFrame = av_frame_alloc();
+    _frame = av_frame_alloc();
     
-    if (pFrame == NULL)
+    if (_frame == NULL)
     {
         log("Failed to alloc frame");
         return false;
     }
     
-    setScale(Vector2(pCodecCtx->width / 2.0f, pCodecCtx->height / 2.0f));
+    setScale(Vector2(_codecCtx->width / 2.0f, _codecCtx->height / 2.0f));
     
     return true;
 }
@@ -233,7 +233,7 @@ bool VideoNode::readFrame()
     AVPacket packet;
 
     // Find the nearest frame
-    if (av_read_frame(pFormatCtx, &packet) >= 0)
+    if (av_read_frame(_formatCtx, &packet) >= 0)
     {
         log("Packet pts: %" PRId64, packet.pts);
         
@@ -242,36 +242,36 @@ bool VideoNode::readFrame()
         {
             int frameFinished = 0;
             // Decode video frame
-            avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
+            avcodec_decode_video2(_codecCtx, _frame, &frameFinished, &packet);
             // Did we get a video frame?
             if (frameFinished)
             {
                 log("Frame decoded");
                 
-                if (pFrame->pts == AV_NOPTS_VALUE)
+                if (_frame->pts == AV_NOPTS_VALUE)
                 {
-                    log("No pts, pkt_pts: %" PRId64, pFrame->pkt_pts);
+                    log("No pts, pkt_pts: %" PRId64, _frame->pkt_pts);
                 }
                 else
                 {
-                    log("pts: %" PRId64 " , pkt_pts: %" PRId64, pFrame->pts, pFrame->pkt_pts);
+                    log("pts: %" PRId64 " , pkt_pts: %" PRId64, _frame->pts, _frame->pkt_pts);
                 }
                 
-                AVFrame* pFrameRGB = av_frame_alloc();
+                AVFrame* frameRGB = av_frame_alloc();
                 
-                if (pFrameRGB == NULL)
+                if (frameRGB == NULL)
                 {
                     log("Failed to alloc frame");
                 }
                 
-                avpicture_alloc((AVPicture*)pFrameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, pCodecCtx->width, pCodecCtx->height);
+                avpicture_alloc((AVPicture*)frameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, _codecCtx->width, _codecCtx->height);
                 
-                pFrameRGB->width = pFrame->width;
-                pFrameRGB->height = pFrame->height;
+                frameRGB->width = _frame->width;
+                frameRGB->height = _frame->height;
                 
-                sws_scale(scalerCtx, pFrame->data, pFrame->linesize, 0, pFrame->height, pFrameRGB->data, pFrameRGB->linesize);
+                sws_scale(_scalerCtx, _frame->data, _frame->linesize, 0, _frame->height, frameRGB->data, frameRGB->linesize);
                 
-                _frames.push(pFrameRGB);
+                _frames.push(frameRGB);
                 
                 result = true;
             }

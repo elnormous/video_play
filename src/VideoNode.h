@@ -37,11 +37,11 @@ protected:
     ouzel::UpdateCallbackPtr _updateCallback;
     
     int videoStream;
-    AVFormatContext* pFormatCtx = nullptr;
-    AVCodecContext* pCodecCtx = nullptr;
-    AVCodec* pCodec = nullptr;
-    AVFrame* pFrame = nullptr;
-    struct SwsContext* scalerCtx = nullptr;
+    AVFormatContext* _formatCtx = nullptr;
+    AVCodecContext* _codecCtx = nullptr;
+    AVCodec* _codec = nullptr;
+    AVFrame* _frame = nullptr;
+    struct SwsContext* _scalerCtx = nullptr;
     
     std::queue<AVFrame*> _frames;
     float _sinceLastFrame = 0.0f;
