@@ -20,39 +20,39 @@ Application::~Application()
 void Application::begin()
 {
     _eventHandler = std::make_shared<EventHandler>();
-    
+
     _eventHandler->keyboardHandler = std::bind(&Application::handleKeyboard, this, std::placeholders::_1, std::placeholders::_2);
     _eventHandler->mouseHandler = std::bind(&Application::handleMouse, this, std::placeholders::_1, std::placeholders::_2);
     _eventHandler->touchHandler = std::bind(&Application::handleTouch, this, std::placeholders::_1, std::placeholders::_2);
     _eventHandler->gamepadHandler = std::bind(&Application::handleGamepad, this, std::placeholders::_1, std::placeholders::_2);
-    
+
     Engine::getInstance()->getEventDispatcher()->addEventHandler(_eventHandler);
-    
+
     Engine::getInstance()->getRenderer()->setClearColor(Color(64, 0, 0));
     Engine::getInstance()->getWindow()->setTitle("Sample");
-    
+
     ScenePtr scene(new Scene());
     Engine::getInstance()->getSceneManager()->setScene(scene);
-    
+
     _layer = Layer::create();
     _layer->init();
     scene->addLayer(_layer);
-    
+
     std::shared_ptr<VideoNode> videoNode = std::make_shared<VideoNode>();
     //std::shared_ptr<VideoTextureNode> videoNode = std::make_shared<VideoTextureNode>();
     videoNode->init();
     _layer->addChild(videoNode);
-    
+
     _uiLayer = Layer::create();
     scene->addLayer(_uiLayer);
-    
+
     ButtonPtr button = Button::create("button.png", "button.png", "button_down.png", "button.png", "", Color(255, 255, 255, 255), "", [videoNode](VoidPtr sender) {
         videoNode->setVisible(!videoNode->isVisible());
     });
     button->setPosition(Vector2(-200.0f, -200.0f));
     button->setScale(Vector2(0.3f, 0.3f));
     _uiLayer->addChild(button);
-    
+
     Engine::getInstance()->getInput()->startGamepadDiscovery();
 }
 
@@ -64,7 +64,7 @@ bool Application::handleKeyboard(const KeyboardEventPtr& event, VoidPtr const& s
         Vector2 position = _layer->getCamera()->getPosition();
         float rotation = _layer->getCamera()->getRotation();
         float zoom = _layer->getCamera()->getZoom();
-        
+
         switch (event->key)
         {
             case KeyboardKey::UP:
@@ -91,7 +91,7 @@ bool Application::handleKeyboard(const KeyboardEventPtr& event, VoidPtr const& s
             case KeyboardKey::KEY_4:
                 zoom += 0.1f;
                 break;
-                
+
             case KeyboardKey::SPACE:
                 break;
             case KeyboardKey::RETURN:
@@ -102,12 +102,12 @@ bool Application::handleKeyboard(const KeyboardEventPtr& event, VoidPtr const& s
             default:
                 break;
         }
-        
+
         _layer->getCamera()->setPosition(position);
         _layer->getCamera()->setRotation(rotation);
         _layer->getCamera()->setZoom(zoom);
     }
-    
+
     return true;
 }
 
@@ -149,6 +149,6 @@ bool Application::handleGamepad(const GamepadEventPtr& event, VoidPtr const& sen
                 break;
         }
     }
-    
+
     return true;
 }
