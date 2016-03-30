@@ -21,7 +21,7 @@ VideoNode::VideoNode()
 
 VideoNode::~VideoNode()
 {
-    Engine::getInstance()->unscheduleUpdate(_updateCallback);
+    sharedEngine->unscheduleUpdate(_updateCallback);
 
     // Free the YUV frame
     if (_frame) av_frame_free(&_frame);
@@ -40,9 +40,9 @@ bool VideoNode::init()
     _updateCallback = std::make_shared<UpdateCallback>();
     _updateCallback->callback = std::bind(&VideoNode::update, this, std::placeholders::_1);
 
-    Engine::getInstance()->scheduleUpdate(_updateCallback);
+    sharedEngine->scheduleUpdate(_updateCallback);
 
-    _shader = Engine::getInstance()->getCache()->getShader(SHADER_TEXTURE);
+    _shader = sharedEngine->getCache()->getShader(SHADER_TEXTURE);
 
 #ifdef OUZEL_PLATFORM_WINDOWS
     _uniModelViewProj = 0;
@@ -59,7 +59,7 @@ bool VideoNode::init()
         VertexPCT(Vector3(1.0f, 1.0f, 0.0f),  Color(255, 255, 255, 255), Vector2(1.0f, 0.0f))
     };
 
-    _mesh = Engine::getInstance()->getRenderer()->createMeshBuffer(indices.data(), sizeof(uint16_t), static_cast<uint32_t>(indices.size()), false,
+    _mesh = sharedEngine->getRenderer()->createMeshBuffer(indices.data(), sizeof(uint16_t), static_cast<uint32_t>(indices.size()), false,
                                                                    vertices.data(), sizeof(VertexPCT), static_cast<uint32_t>(vertices.size()), true,
                                                                    VertexPCT::ATTRIBUTES);
 
@@ -143,7 +143,7 @@ bool VideoNode::init()
         return false;
     }
 
-    _texture = ouzel::Engine::getInstance()->getRenderer()->createTexture(Size2(_codecCtx->width, _codecCtx->height), true, false);
+    _texture = ouzel::sharedEngine->getRenderer()->createTexture(Size2(_codecCtx->width, _codecCtx->height), true, false);
 
     _scalerCtx = sws_getContext(_codecCtx->width,
                                 _codecCtx->height,
@@ -217,14 +217,14 @@ void VideoNode::draw()
 {
     if (LayerPtr layer = _layer.lock())
     {
-        Engine::getInstance()->getRenderer()->activateTexture(_texture, 0);
-        Engine::getInstance()->getRenderer()->activateShader(_shader);
+        sharedEngine->getRenderer()->activateTexture(_texture, 0);
+        sharedEngine->getRenderer()->activateShader(_shader);
 
         Matrix4 modelViewProj = layer->getCamera()->getViewProjection() * _transform;
 
         _shader->setVertexShaderConstant(_uniModelViewProj, { modelViewProj });
 
-        Engine::getInstance()->getRenderer()->drawMeshBuffer(_mesh);
+        sharedEngine->getRenderer()->drawMeshBuffer(_mesh);
     }
 }
 

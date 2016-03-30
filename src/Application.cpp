@@ -14,7 +14,7 @@ using namespace input;
 
 Application::~Application()
 {
-    Engine::getInstance()->getEventDispatcher()->removeEventHandler(_eventHandler);
+    sharedEngine->getEventDispatcher()->removeEventHandler(_eventHandler);
 }
 
 void Application::begin()
@@ -26,13 +26,13 @@ void Application::begin()
     _eventHandler->touchHandler = std::bind(&Application::handleTouch, this, std::placeholders::_1, std::placeholders::_2);
     _eventHandler->gamepadHandler = std::bind(&Application::handleGamepad, this, std::placeholders::_1, std::placeholders::_2);
 
-    Engine::getInstance()->getEventDispatcher()->addEventHandler(_eventHandler);
+    sharedEngine->getEventDispatcher()->addEventHandler(_eventHandler);
 
-    Engine::getInstance()->getRenderer()->setClearColor(Color(64, 0, 0));
-    Engine::getInstance()->getWindow()->setTitle("Sample");
+    sharedEngine->getRenderer()->setClearColor(Color(64, 0, 0));
+    sharedEngine->getWindow()->setTitle("Sample");
 
     ScenePtr scene(new Scene());
-    Engine::getInstance()->getSceneManager()->setScene(scene);
+    sharedEngine->getSceneManager()->setScene(scene);
 
     _layer = Layer::create();
     _layer->init();
@@ -46,14 +46,12 @@ void Application::begin()
     _uiLayer = Layer::create();
     scene->addLayer(_uiLayer);
 
-    ButtonPtr button = Button::create("button.png", "button.png", "button_down.png", "button.png", "", Color(255, 255, 255, 255), "", [videoNode](VoidPtr sender) {
-        videoNode->setVisible(!videoNode->isVisible());
-    });
+    ButtonPtr button = Button::create("button.png", "button.png", "button_down.png", "button.png", "", Color(255, 255, 255, 255), "");
     button->setPosition(Vector2(-200.0f, -200.0f));
     button->setScale(Vector2(0.3f, 0.3f));
     _uiLayer->addChild(button);
 
-    Engine::getInstance()->getInput()->startGamepadDiscovery();
+    sharedEngine->getInput()->startGamepadDiscovery();
 }
 
 bool Application::handleKeyboard(const KeyboardEventPtr& event, VoidPtr const& sender) const
@@ -95,7 +93,7 @@ bool Application::handleKeyboard(const KeyboardEventPtr& event, VoidPtr const& s
             case KeyboardKey::SPACE:
                 break;
             case KeyboardKey::RETURN:
-                Engine::getInstance()->getWindow()->setSize(Size2(640.0f, 480.0f));
+                sharedEngine->getWindow()->setSize(Size2(640.0f, 480.0f));
                 break;
             case KeyboardKey::TAB:
                 break;
