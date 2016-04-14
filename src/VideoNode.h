@@ -32,8 +32,6 @@ protected:
     ouzel::video::ShaderPtr _shader;
     ouzel::video::MeshBufferPtr _mesh;
 
-    uint32_t _uniModelViewProj;
-
     ouzel::UpdateCallbackPtr _updateCallback;
 
     int videoStream;

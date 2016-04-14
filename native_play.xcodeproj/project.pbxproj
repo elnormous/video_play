@@ -26,6 +26,12 @@
 		3047F7311C46A7BD00774E3D /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F7301C46A7BD00774E3D /* CoreVideo.framework */; };
 		3047F7331C46A7C500774E3D /* VideoDecodeAcceleration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F7321C46A7C500774E3D /* VideoDecodeAcceleration.framework */; };
 		3047F7351C46A7CC00774E3D /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F7341C46A7CC00774E3D /* CoreFoundation.framework */; };
+		307BD7E41CBFCF4F0071F0BB /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 307BD7E21CBFCF4F0071F0BB /* Metal.framework */; };
+		307BD7E51CBFCF4F0071F0BB /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 307BD7E31CBFCF4F0071F0BB /* MetalKit.framework */; };
+		307BD7EB1CBFCF570071F0BB /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 307BD7E91CBFCF570071F0BB /* Metal.framework */; };
+		307BD7EC1CBFCF570071F0BB /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 307BD7EA1CBFCF570071F0BB /* MetalKit.framework */; };
+		307BD7EF1CBFCF600071F0BB /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 307BD7ED1CBFCF600071F0BB /* Metal.framework */; };
+		307BD7F01CBFCF600071F0BB /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 307BD7EE1CBFCF600071F0BB /* MetalKit.framework */; };
 		30EDFC431C6CDC1A008E9753 /* button_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 30EDFC411C6CDC1A008E9753 /* button_down.png */; };
 		30EDFC441C6CDC1A008E9753 /* button_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 30EDFC411C6CDC1A008E9753 /* button_down.png */; };
 		30EDFC451C6CDC1A008E9753 /* button_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 30EDFC411C6CDC1A008E9753 /* button_down.png */; };
@@ -84,6 +90,12 @@
 		3047F7321C46A7C500774E3D /* VideoDecodeAcceleration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoDecodeAcceleration.framework; path = System/Library/Frameworks/VideoDecodeAcceleration.framework; sourceTree = SDKROOT; };
 		3047F7341C46A7CC00774E3D /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		304A8E0A1C237B95008B1151 /* native_play_osx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = native_play_osx.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		307BD7E21CBFCF4F0071F0BB /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		307BD7E31CBFCF4F0071F0BB /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		307BD7E91CBFCF570071F0BB /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/Metal.framework; sourceTree = DEVELOPER_DIR; };
+		307BD7EA1CBFCF570071F0BB /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/MetalKit.framework; sourceTree = DEVELOPER_DIR; };
+		307BD7ED1CBFCF600071F0BB /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.2.sdk/System/Library/Frameworks/Metal.framework; sourceTree = DEVELOPER_DIR; };
+		307BD7EE1CBFCF600071F0BB /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.2.sdk/System/Library/Frameworks/MetalKit.framework; sourceTree = DEVELOPER_DIR; };
 		30EDFC331C6CADFF008E9753 /* VideoTextureNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VideoTextureNode.cpp; sourceTree = "<group>"; };
 		30EDFC341C6CADFF008E9753 /* VideoTextureNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoTextureNode.h; sourceTree = "<group>"; };
 		30EDFC411C6CDC1A008E9753 /* button_down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_down.png; path = Resources/button_down.png; sourceTree = "<group>"; };
@@ -95,6 +107,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				307BD7EB1CBFCF570071F0BB /* Metal.framework in Frameworks */,
+				307BD7EC1CBFCF570071F0BB /* MetalKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +116,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				307BD7EF1CBFCF600071F0BB /* Metal.framework in Frameworks */,
+				307BD7F01CBFCF600071F0BB /* MetalKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,6 +125,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				307BD7E41CBFCF4F0071F0BB /* Metal.framework in Frameworks */,
+				307BD7E51CBFCF4F0071F0BB /* MetalKit.framework in Frameworks */,
 				3047F7351C46A7CC00774E3D /* CoreFoundation.framework in Frameworks */,
 				3047F7331C46A7C500774E3D /* VideoDecodeAcceleration.framework in Frameworks */,
 				3047F7311C46A7BD00774E3D /* CoreVideo.framework in Frameworks */,
@@ -155,6 +173,12 @@
 		3047F70F1C46A1B800774E3D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				307BD7ED1CBFCF600071F0BB /* Metal.framework */,
+				307BD7EE1CBFCF600071F0BB /* MetalKit.framework */,
+				307BD7E91CBFCF570071F0BB /* Metal.framework */,
+				307BD7EA1CBFCF570071F0BB /* MetalKit.framework */,
+				307BD7E21CBFCF4F0071F0BB /* Metal.framework */,
+				307BD7E31CBFCF4F0071F0BB /* MetalKit.framework */,
 				3047F7341C46A7CC00774E3D /* CoreFoundation.framework */,
 				3047F7321C46A7C500774E3D /* VideoDecodeAcceleration.framework */,
 				3047F7301C46A7BD00774E3D /* CoreVideo.framework */,

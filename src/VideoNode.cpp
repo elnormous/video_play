@@ -44,12 +44,6 @@ bool VideoNode::init()
 
     _shader = sharedEngine->getCache()->getShader(SHADER_TEXTURE);
 
-#ifdef OUZEL_PLATFORM_WINDOWS
-    _uniModelViewProj = 0;
-#else
-    _uniModelViewProj = _shader->getVertexShaderConstantId("modelViewProj");
-#endif
-
     std::vector<uint16_t> indices = {0, 1, 2, 1, 3, 2};
 
     std::vector<VertexPCT> vertices = {
@@ -59,9 +53,8 @@ bool VideoNode::init()
         VertexPCT(Vector3(1.0f, 1.0f, 0.0f),  Color(255, 255, 255, 255), Vector2(1.0f, 0.0f))
     };
 
-    _mesh = sharedEngine->getRenderer()->createMeshBuffer(indices.data(), sizeof(uint16_t), static_cast<uint32_t>(indices.size()), false,
-                                                                   vertices.data(), sizeof(VertexPCT), static_cast<uint32_t>(vertices.size()), true,
-                                                                   VertexPCT::ATTRIBUTES);
+    _mesh = sharedEngine->getRenderer()->createMeshBufferFromData(indices.data(), sizeof(uint16_t), static_cast<uint32_t>(indices.size()), false,
+                                                                   vertices.data(), VertexPCT::ATTRIBUTES, static_cast<uint32_t>(vertices.size()), true);
 
     // Register all formats and codecs
     av_register_all();
@@ -222,7 +215,7 @@ void VideoNode::draw()
 
         Matrix4 modelViewProj = layer->getCamera()->getViewProjection() * _transform;
 
-        _shader->setVertexShaderConstant(_uniModelViewProj, { modelViewProj });
+        _shader->setVertexShaderConstant(0, { modelViewProj });
 
         sharedEngine->getRenderer()->drawMeshBuffer(_mesh);
     }
@@ -251,11 +244,11 @@ bool VideoNode::readFrame()
 
                 if (_frame->pts == AV_NOPTS_VALUE)
                 {
-                    log("No pts, pkt_pts: %" PRId64, _frame->pkt_pts);
+                    log("No pts, pkt_pts: %" PRId64 ", pkt_dts: %" PRId64, _frame->pkt_pts, _frame->pkt_dts);
                 }
                 else
                 {
-                    log("pts: %" PRId64 " , pkt_pts: %" PRId64, _frame->pts, _frame->pkt_pts);
+                    log("pts: %" PRId64 " , pkt_pts: %" PRId64 ", pkt_dts: %" PRId64, _frame->pts, _frame->pkt_pts, _frame->pkt_dts);
                 }
 
                 AVFrame* frameRGB = av_frame_alloc();

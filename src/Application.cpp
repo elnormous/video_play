@@ -34,8 +34,7 @@ void Application::begin()
     ScenePtr scene(new Scene());
     sharedEngine->getSceneManager()->setScene(scene);
 
-    _layer = Layer::create();
-    _layer->init();
+    _layer = std::make_shared<Layer>();
     scene->addLayer(_layer);
 
     std::shared_ptr<VideoNode> videoNode = std::make_shared<VideoNode>();
@@ -43,7 +42,7 @@ void Application::begin()
     videoNode->init();
     _layer->addChild(videoNode);
 
-    _uiLayer = Layer::create();
+    _uiLayer = std::make_shared<Layer>();
     scene->addLayer(_uiLayer);
 
     ButtonPtr button = Button::create("button.png", "button.png", "button_down.png", "button.png", "", Color(255, 255, 255, 255), "");
