@@ -13,7 +13,7 @@
 
 using namespace ouzel;
 using namespace scene;
-using namespace video;
+using namespace graphics;
 
 VideoNode::VideoNode()
 {

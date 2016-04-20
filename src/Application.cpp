@@ -7,7 +7,7 @@
 //#include "VideoTextureNode.h"
 
 using namespace ouzel;
-using namespace video;
+using namespace graphics;
 using namespace scene;
 using namespace gui;
 using namespace input;

@@ -28,9 +28,9 @@ public:
 protected:
     bool readFrame();
 
-    ouzel::video::TexturePtr _texture;
-    ouzel::video::ShaderPtr _shader;
-    ouzel::video::MeshBufferPtr _mesh;
+    ouzel::graphics::TexturePtr _texture;
+    ouzel::graphics::ShaderPtr _shader;
+    ouzel::graphics::MeshBufferPtr _mesh;
 
     ouzel::UpdateCallbackPtr _updateCallback;
 
