@@ -12,23 +12,17 @@ VideoTextureNode::VideoTextureNode()
 
 VideoTextureNode::~VideoTextureNode()
 {
-    sharedEngine->unscheduleUpdate(_updateCallback);
+    sharedEngine->unscheduleUpdate(updateCallback);
 }
 
 bool VideoTextureNode::init()
 {
-    _updateCallback = std::make_shared<UpdateCallback>();
-    _updateCallback->callback = std::bind(&VideoTextureNode::update, this, std::placeholders::_1);
+    updateCallback = std::make_shared<UpdateCallback>();
+    updateCallback->callback = std::bind(&VideoTextureNode::update, this, std::placeholders::_1);
 
-    sharedEngine->scheduleUpdate(_updateCallback);
+    sharedEngine->scheduleUpdate(updateCallback);
 
-    _shader = sharedEngine->getCache()->getShader(SHADER_TEXTURE);
-
-#ifdef OUZEL_PLATFORM_WINDOWS
-    _uniModelViewProj = 0;
-#else
-    _uniModelViewProj = _shader->getVertexShaderConstantId("modelViewProj");
-#endif
+    shader = sharedEngine->getCache()->getShader(SHADER_TEXTURE);
 
     std::vector<uint16_t> indices = {0, 1, 2, 1, 3, 2};
 
@@ -39,11 +33,11 @@ bool VideoTextureNode::init()
         VertexPCT(Vector3(1.0f, 1.0f, 0.0f),  Color(255, 255, 255, 255), Vector2(1.0f, 0.0f))
     };
 
-    _mesh = sharedEngine->getRenderer()->createMeshBuffer(indices.data(), sizeof(uint16_t), static_cast<uint32_t>(indices.size()), false,
+    mesh = sharedEngine->getRenderer()->createMeshBuffer(indices.data(), sizeof(uint16_t), static_cast<uint32_t>(indices.size()), false,
                                                                    vertices.data(), sizeof(VertexPCT), static_cast<uint32_t>(vertices.size()), true,
                                                                    VertexPCT::ATTRIBUTES);
 
-    _texture = sharedEngine->getRenderer()->loadVideoTextureFromFile("/Users/elviss/Desktop/video/test.mov");
+    texture = sharedEngine->getRenderer()->loadVideoTextureFromFile("/Users/elviss/Desktop/video/test.mov");
 
     return true;
 }
@@ -53,14 +47,17 @@ void VideoTextureNode::update(float delta)
 
 }
 
-void VideoTextureNode::draw()
+void VideoTextureNode::draw(const ouzel::Matrix4& projectionMatrix, const ouzel::Matrix4& transformMatrix, const ouzel::graphics::Color& drawColor)
 {
-    sharedEngine->getRenderer()->activateTexture(_texture, 0);
-    sharedEngine->getRenderer()->activateShader(_shader);
+    sharedEngine->getRenderer()->activateTexture(texture, 0);
+    sharedEngine->getRenderer()->activateShader(shader);
 
-    Matrix4 modelViewProj = Matrix4::identity();
+    Matrix4 modelViewProj = projectionMatrix * transformMatrix;
 
-    _shader->setVertexShaderConstant(_uniModelViewProj, { modelViewProj });
+    float colorVector[] = { drawColor.getR(), drawColor.getG(), drawColor.getB(), drawColor.getA() };
 
-    sharedEngine->getRenderer()->drawMeshBuffer(_mesh);
+    shader->setVertexShaderConstant(0, sizeof(Matrix4), 1, modelViewProj.m);
+    shader->setPixelShaderConstant(0, sizeof(colorVector), 1, colorVector);
+
+    sharedEngine->getRenderer()->drawMeshBuffer(mesh);
 }

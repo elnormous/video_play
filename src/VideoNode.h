@@ -14,7 +14,7 @@ extern "C"
 #include <libavcodec/avcodec.h>
 }
 
-class VideoNode: public ouzel::scene::Node
+class VideoNode: public ouzel::scene::Drawable
 {
 public:
     VideoNode();
@@ -23,24 +23,24 @@ public:
     virtual bool init();
 
     virtual void update(float delta);
-    virtual void draw() override;
+    virtual void draw(const ouzel::Matrix4& projectionMatrix, const ouzel::Matrix4& transformMatrix, const ouzel::graphics::Color& drawColor) override;
 
 protected:
     bool readFrame();
 
-    ouzel::graphics::TexturePtr _texture;
-    ouzel::graphics::ShaderPtr _shader;
-    ouzel::graphics::MeshBufferPtr _mesh;
+    ouzel::graphics::TexturePtr texture;
+    ouzel::graphics::ShaderPtr shader;
+    ouzel::graphics::MeshBufferPtr mesh;
 
-    ouzel::UpdateCallbackPtr _updateCallback;
+    ouzel::UpdateCallbackPtr updateCallback;
 
     int videoStream;
-    AVFormatContext* _formatCtx = nullptr;
-    AVCodecContext* _codecCtx = nullptr;
-    AVCodec* _codec = nullptr;
-    AVFrame* _frame = nullptr;
-    struct SwsContext* _scalerCtx = nullptr;
+    AVFormatContext* formatCtx = nullptr;
+    AVCodecContext* codecCtx = nullptr;
+    AVCodec* codec = nullptr;
+    AVFrame* frame = nullptr;
+    struct SwsContext* scalerCtx = nullptr;
 
-    std::queue<AVFrame*> _frames;
-    float _sinceLastFrame = 0.0f;
+    std::queue<AVFrame*> frames;
+    float sinceLastFrame = 0.0f;
 };

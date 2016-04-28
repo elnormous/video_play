@@ -14,19 +14,19 @@ using namespace input;
 
 Application::~Application()
 {
-    sharedEngine->getEventDispatcher()->removeEventHandler(_eventHandler);
+    sharedEngine->getEventDispatcher()->removeEventHandler(eventHandler);
 }
 
 void Application::begin()
 {
-    _eventHandler = std::make_shared<EventHandler>();
+    eventHandler = std::make_shared<EventHandler>();
 
-    _eventHandler->keyboardHandler = std::bind(&Application::handleKeyboard, this, std::placeholders::_1, std::placeholders::_2);
-    _eventHandler->mouseHandler = std::bind(&Application::handleMouse, this, std::placeholders::_1, std::placeholders::_2);
-    _eventHandler->touchHandler = std::bind(&Application::handleTouch, this, std::placeholders::_1, std::placeholders::_2);
-    _eventHandler->gamepadHandler = std::bind(&Application::handleGamepad, this, std::placeholders::_1, std::placeholders::_2);
+    eventHandler->keyboardHandler = std::bind(&Application::handleKeyboard, this, std::placeholders::_1, std::placeholders::_2);
+    eventHandler->mouseHandler = std::bind(&Application::handleMouse, this, std::placeholders::_1, std::placeholders::_2);
+    eventHandler->touchHandler = std::bind(&Application::handleTouch, this, std::placeholders::_1, std::placeholders::_2);
+    eventHandler->gamepadHandler = std::bind(&Application::handleGamepad, this, std::placeholders::_1, std::placeholders::_2);
 
-    sharedEngine->getEventDispatcher()->addEventHandler(_eventHandler);
+    sharedEngine->getEventDispatcher()->addEventHandler(eventHandler);
 
     sharedEngine->getRenderer()->setClearColor(Color(64, 0, 0));
     sharedEngine->getWindow()->setTitle("Sample");
@@ -34,21 +34,24 @@ void Application::begin()
     ScenePtr scene(new Scene());
     sharedEngine->getSceneManager()->setScene(scene);
 
-    _layer = std::make_shared<Layer>();
-    scene->addLayer(_layer);
+    layer = std::make_shared<Layer>();
+    scene->addLayer(layer);
 
-    std::shared_ptr<VideoNode> videoNode = std::make_shared<VideoNode>();
+    NodePtr videoNode = std::make_shared<Node>();
+    std::shared_ptr<VideoNode> video = std::make_shared<VideoNode>();
     //std::shared_ptr<VideoTextureNode> videoNode = std::make_shared<VideoTextureNode>();
-    videoNode->init();
-    _layer->addChild(videoNode);
+    video->init();
 
-    _uiLayer = std::make_shared<Layer>();
-    scene->addLayer(_uiLayer);
+    videoNode->addDrawable(video);
+    layer->addChild(videoNode);
+
+    uiLayer = std::make_shared<Layer>();
+    scene->addLayer(uiLayer);
 
     ButtonPtr button = Button::create("button.png", "button.png", "button_down.png", "button.png", "", Color(255, 255, 255, 255), "");
     button->setPosition(Vector2(-200.0f, -200.0f));
     button->setScale(Vector2(0.3f, 0.3f));
-    _uiLayer->addChild(button);
+    uiLayer->addChild(button);
 
     sharedEngine->getInput()->startGamepadDiscovery();
 }
@@ -58,9 +61,9 @@ bool Application::handleKeyboard(const KeyboardEventPtr& event, VoidPtr const& s
     if (event->type == Event::Type::KEY_DOWN ||
         event->type == Event::Type::KEY_REPEAT)
     {
-        Vector2 position = _layer->getCamera()->getPosition();
-        float rotation = _layer->getCamera()->getRotation();
-        float zoom = _layer->getCamera()->getZoom();
+        Vector2 position = layer->getCamera()->getPosition();
+        float rotation = layer->getCamera()->getRotation();
+        float zoom = layer->getCamera()->getZoom();
 
         switch (event->key)
         {
@@ -100,9 +103,9 @@ bool Application::handleKeyboard(const KeyboardEventPtr& event, VoidPtr const& s
                 break;
         }
 
-        _layer->getCamera()->setPosition(position);
-        _layer->getCamera()->setRotation(rotation);
-        _layer->getCamera()->setZoom(zoom);
+        layer->getCamera()->setPosition(position);
+        layer->getCamera()->setRotation(rotation);
+        layer->getCamera()->setZoom(zoom);
     }
 
     return true;

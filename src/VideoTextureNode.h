@@ -4,7 +4,7 @@
 
 #pragma once
 
-class VideoTextureNode: public ouzel::Node
+class VideoTextureNode: public ouzel::Drawable
 {
 public:
     VideoTextureNode();
@@ -13,14 +13,12 @@ public:
     virtual bool init();
 
     virtual void update(float delta);
-    virtual void draw() override;
+    virtual void draw(const ouzel::Matrix4& projectionMatrix, const ouzel::Matrix4& transformMatrix, const ouzel::graphics::Color& drawColor) override;
 
 protected:
-    ouzel::VideoTexturePtr _texture;
-    ouzel::ShaderPtr _shader;
-    ouzel::MeshBufferPtr _mesh;
+    ouzel::VideoTexturePtr texture;
+    ouzel::ShaderPtr shader;
+    ouzel::MeshBufferPtr mesh;
 
-    uint32_t _uniModelViewProj;
-
-    ouzel::UpdateCallbackPtr _updateCallback;
+    ouzel::UpdateCallbackPtr updateCallback;
 };
