@@ -171,6 +171,11 @@ const float FRAME_INTERVAL = 1.0f / FPS;
 
 void VideoNode::update(float delta)
 {
+    if (!formatCtx)
+    {
+        return;
+    }
+
     readFrame();
 
     sinceLastFrame += delta;

@@ -21,10 +21,10 @@ void Application::begin()
 {
     eventHandler = std::make_shared<EventHandler>();
 
-    eventHandler->keyboardHandler = std::bind(&Application::handleKeyboard, this, std::placeholders::_1, std::placeholders::_2);
-    eventHandler->mouseHandler = std::bind(&Application::handleMouse, this, std::placeholders::_1, std::placeholders::_2);
-    eventHandler->touchHandler = std::bind(&Application::handleTouch, this, std::placeholders::_1, std::placeholders::_2);
-    eventHandler->gamepadHandler = std::bind(&Application::handleGamepad, this, std::placeholders::_1, std::placeholders::_2);
+    eventHandler->keyboardHandler = std::bind(&Application::handleKeyboard, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+    eventHandler->mouseHandler = std::bind(&Application::handleMouse, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+    eventHandler->touchHandler = std::bind(&Application::handleTouch, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+    eventHandler->gamepadHandler = std::bind(&Application::handleGamepad, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
     sharedEngine->getEventDispatcher()->addEventHandler(eventHandler);
 
@@ -56,16 +56,16 @@ void Application::begin()
     sharedEngine->getInput()->startGamepadDiscovery();
 }
 
-bool Application::handleKeyboard(const KeyboardEventPtr& event, VoidPtr const& sender) const
+bool Application::handleKeyboard(ouzel::Event::Type type, const KeyboardEvent& event, const VoidPtr& sender) const
 {
-    if (event->type == Event::Type::KEY_DOWN ||
-        event->type == Event::Type::KEY_REPEAT)
+    if (type == Event::Type::KEY_DOWN ||
+        type == Event::Type::KEY_REPEAT)
     {
         Vector2 position = layer->getCamera()->getPosition();
         float rotation = layer->getCamera()->getRotation();
         float zoom = layer->getCamera()->getZoom();
 
-        switch (event->key)
+        switch (event.key)
         {
             case KeyboardKey::UP:
                 position.y += 10.0f;
@@ -111,21 +111,21 @@ bool Application::handleKeyboard(const KeyboardEventPtr& event, VoidPtr const& s
     return true;
 }
 
-bool Application::handleMouse(const MouseEventPtr& event, VoidPtr const& sender) const
+bool Application::handleMouse(ouzel::Event::Type type, const MouseEvent& event, const VoidPtr& sender) const
 {
     return true;
 }
 
-bool Application::handleTouch(const TouchEventPtr& event, VoidPtr const& sender) const
+bool Application::handleTouch(ouzel::Event::Type type, const TouchEvent& event, const VoidPtr& sender) const
 {
     return true;
 }
 
-bool Application::handleGamepad(const GamepadEventPtr& event, VoidPtr const& sender) const
+bool Application::handleGamepad(ouzel::Event::Type type, const GamepadEvent& event, const VoidPtr& sender) const
 {
-    if (event->type == Event::Type::GAMEPAD_BUTTON_CHANGE)
+    if (type == Event::Type::GAMEPAD_BUTTON_CHANGE)
     {
-        switch (event->button)
+        switch (event.button)
         {
             case GamepadButton::DPAD_UP:
             case GamepadButton::LEFT_THUMB_UP:

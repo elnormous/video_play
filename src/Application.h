@@ -11,10 +11,10 @@ public:
 
     virtual void begin();
 
-    bool handleKeyboard(const ouzel::KeyboardEventPtr& event, ouzel::VoidPtr const& sender) const;
-    bool handleMouse(const ouzel::MouseEventPtr& event, ouzel::VoidPtr const& sender) const;
-    bool handleTouch(const ouzel::TouchEventPtr& event, ouzel::VoidPtr const& sender) const;
-    bool handleGamepad(const ouzel::GamepadEventPtr& event, ouzel::VoidPtr const& sender) const;
+    bool handleKeyboard(ouzel::Event::Type type, const ouzel::KeyboardEvent& event, const ouzel::VoidPtr& sender) const;
+    bool handleMouse(ouzel::Event::Type type, const ouzel::MouseEvent& event, const ouzel::VoidPtr& sender) const;
+    bool handleTouch(ouzel::Event::Type type, const ouzel::TouchEvent& event, const ouzel::VoidPtr& sender) const;
+    bool handleGamepad(ouzel::Event::Type type, const ouzel::GamepadEvent& event, const ouzel::VoidPtr& sender) const;
 
 protected:
     ouzel::scene::LayerPtr layer;
