@@ -263,28 +263,28 @@ bool Video::readFrame()
 
                 if (frame->pts == AV_NOPTS_VALUE)
                 {
-                    Log() << "No pts, pkt_pts: " << frame->pkt_pts << ", pkt_dts: " << frame->pkt_dts;
+                    Log() << "No pts, pkt_dts: " << frame->pkt_dts;
                 }
                 else
                 {
-                    Log() << "pts: " << frame->pts << " , pkt_pts: " << frame->pkt_pts << ", pkt_dts: " << frame->pkt_dts;
+                    Log() << "pts: " << frame->pts << ", pkt_dts: " << frame->pkt_dts;
                 }
 
-                AVFrame* frameRGB = av_frame_alloc();
+                AVFrame* frameRGBA = av_frame_alloc();
 
-                if (frameRGB == NULL)
+                if (frameRGBA == NULL)
                 {
                     Log() << "Failed to alloc frame";
                 }
 
-                avpicture_alloc((AVPicture*)frameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, codecCtx->width, codecCtx->height);
+                avpicture_alloc((AVPicture*)frameRGBA, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, codecCtx->width, codecCtx->height);
 
-                frameRGB->width = frame->width;
-                frameRGB->height = frame->height;
+                frameRGBA->width = frame->width;
+                frameRGBA->height = frame->height;
 
-                sws_scale(scalerCtx, frame->data, frame->linesize, 0, frame->height, frameRGB->data, frameRGB->linesize);
+                sws_scale(scalerCtx, frame->data, frame->linesize, 0, frame->height, frameRGBA->data, frameRGBA->linesize);
 
-                frames.push(frameRGB);
+                frames.push(frameRGBA);
 
                 result = true;
             }

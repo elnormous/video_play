@@ -19,7 +19,8 @@ void ouzelMain(std::vector<std::string> const& args)
     settings.size = ouzel::Size2(800.0f, 600.0f);
     settings.resizable = true;
 
-    engine.init(settings);
-
-    player.reset(new Player(args[1]));
+    if (engine.init(settings))
+    {
+        player.reset(new Player(args[1]));
+    }
 }
