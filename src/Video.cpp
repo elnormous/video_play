@@ -2,7 +2,7 @@
 //  native_play
 //
 
-#include "VideoNode.h"
+#include "Video.h"
 
 #include <cstdio>
 #include <cinttypes>
@@ -15,14 +15,12 @@ using namespace ouzel;
 using namespace scene;
 using namespace graphics;
 
-VideoNode::VideoNode()
+Video::Video()
 {
 }
 
-VideoNode::~VideoNode()
+Video::~Video()
 {
-    sharedEngine->unscheduleUpdate(updateCallback);
-
     // Free the YUV frame
     if (frame) av_frame_free(&frame);
 
@@ -35,14 +33,13 @@ VideoNode::~VideoNode()
     if (formatCtx) avformat_close_input(&formatCtx);
 }
 
-bool VideoNode::init()
+bool Video::init(const std::string& stream)
 {
-    updateCallback = std::make_shared<UpdateCallback>();
-    updateCallback->callback = std::bind(&VideoNode::update, this, std::placeholders::_1);
-
-    sharedEngine->scheduleUpdate(updateCallback);
+    updateCallback.callback = std::bind(&Video::update, this, std::placeholders::_1);
+    sharedEngine->scheduleUpdate(&updateCallback);
 
     shader = sharedEngine->getCache()->getShader(SHADER_TEXTURE);
+    blendState = sharedEngine->getCache()->getBlendState(graphics::BLEND_ALPHA);
 
     std::vector<uint16_t> indices = {0, 1, 2, 1, 3, 2};
 
@@ -53,8 +50,13 @@ bool VideoNode::init()
         VertexPCT(Vector3(1.0f, 1.0f, 0.0f),  Color(255, 255, 255, 255), Vector2(1.0f, 0.0f))
     };
 
-    mesh = sharedEngine->getRenderer()->createMeshBufferFromData(indices.data(), sizeof(uint16_t), static_cast<uint32_t>(indices.size()), false,
-                                                                   vertices.data(), VertexPCT::ATTRIBUTES, static_cast<uint32_t>(vertices.size()), true);
+    meshBuffer = sharedEngine->getRenderer()->createMeshBuffer();
+    indexBuffer = sharedEngine->getRenderer()->createIndexBuffer();
+    vertexBuffer = sharedEngine->getRenderer()->createVertexBuffer();
+
+    indexBuffer->initFromBuffer(indices.data(), sizeof(uint16_t), static_cast<uint32_t>(indices.size()), false);
+    vertexBuffer->initFromBuffer(vertices.data(), VertexPCT::ATTRIBUTES, static_cast<uint32_t>(vertices.size()), true);
+    meshBuffer->init(indexBuffer, vertexBuffer);
 
     // Register all formats and codecs
     av_register_all();
@@ -63,18 +65,11 @@ bool VideoNode::init()
     formatCtx = avformat_alloc_context();
     if (!formatCtx)
     {
-        log("Couldn't alloc avformat context");
+        Log() << "Couldn't alloc avformat context";
         return false;
     }
 
     formatCtx->flags |= AVFMT_FLAG_NONBLOCK;
-
-    if (getArgs().size() < 2)
-    {
-        return false;
-    }
-
-    std::string stream = getArgs()[1];
 
     char proto[8];
     av_url_split(proto, sizeof(proto), NULL, 0,
@@ -92,7 +87,7 @@ bool VideoNode::init()
     int ret;
     if ((ret = avformat_open_input(&formatCtx, stream.c_str(), NULL, &inputOptions)) != 0)
     {
-        log("Couldn't open file %s, error: %d", stream.c_str(), ret);
+        Log() << "Couldn't open file " << stream << ", error: " << ret;
         av_dict_free(&inputOptions);
         return false;
     }
@@ -102,13 +97,13 @@ bool VideoNode::init()
     // Retrieve stream information
     if (avformat_find_stream_info(formatCtx, NULL) < 0)
     {
-        log("Couldn't find stream information");
+        Log() << "Couldn't find stream information";
         return false;
     }
 
     if ((formatCtx->duration > 0) && ((((float_t)formatCtx->duration / AV_TIME_BASE))) < 0.1)
     {
-        log("seconds greater than duration");
+        Log() << "seconds greater than duration";
         return false;
     }
 
@@ -116,7 +111,7 @@ bool VideoNode::init()
     videoStream = av_find_best_stream(formatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0);
     if (videoStream == -1)
     {
-        ouzel::log("Didn't find a video stream");
+        Log() << "Didn't find a video stream";
         return false;
     }
 
@@ -132,11 +127,12 @@ bool VideoNode::init()
     // Open codec
     if ((avcodec_open2(codecCtx, codec, &dict)) < 0)
     {
-        log("Could not open codec");
+        Log() << "Could not open codec";
         return false;
     }
 
-    texture = ouzel::sharedEngine->getRenderer()->createTexture(Size2(codecCtx->width, codecCtx->height), true, false);
+    texture = ouzel::sharedEngine->getRenderer()->createTexture();
+    texture->init(Size2(codecCtx->width, codecCtx->height), true, false);
 
     scalerCtx = sws_getContext(codecCtx->width,
                                codecCtx->height,
@@ -148,7 +144,7 @@ bool VideoNode::init()
                                NULL, NULL, NULL);
     if (!scalerCtx)
     {
-        log("sws_getContext() failed");
+        Log() << "sws_getContext() failed";
         return false;
     }
 
@@ -157,7 +153,7 @@ bool VideoNode::init()
 
     if (frame == NULL)
     {
-        log("Failed to alloc frame");
+        Log() << "Failed to alloc frame";
         return false;
     }
 
@@ -169,7 +165,7 @@ bool VideoNode::init()
 const float FPS = 25.0f;
 const float FRAME_INTERVAL = 1.0f / FPS;
 
-void VideoNode::update(float delta)
+void Video::update(float delta)
 {
     if (!formatCtx)
     {
@@ -191,7 +187,10 @@ void VideoNode::update(float delta)
 
             if (sinceLastFrame < FRAME_INTERVAL)
             {
-                texture->upload(frame->data[0], ouzel::Size2(frame->width, frame->height));
+                std::vector<uint8_t> data(frame->data[0],
+                                          frame->data[0] + frame->width * frame->height * 4);
+
+                texture->setData(data, ouzel::Size2(frame->width, frame->height));
             }
 
             if (frame)
@@ -211,22 +210,37 @@ void VideoNode::update(float delta)
     }
 }
 
-void VideoNode::draw(const ouzel::Matrix4& projectionMatrix, const ouzel::Matrix4& transformMatrix, const ouzel::graphics::Color& drawColor)
+void Video::draw(const ouzel::Matrix4& transformMatrix,
+                 const ouzel::Color& drawColor,
+                 ouzel::scene::Camera* camera)
 {
-    sharedEngine->getRenderer()->activateTexture(texture, 0);
-    sharedEngine->getRenderer()->activateShader(shader);
+    Component::draw(transformMatrix, drawColor, camera);
 
-    Matrix4 modelViewProj = projectionMatrix * transformMatrix;
+    Matrix4 modelViewProj = camera->getRenderViewProjection() * transformMatrix;
+    float colorVector[] = {drawColor.normR(), drawColor.normG(), drawColor.normB(), drawColor.normA()};
 
-    float colorVector[] = { drawColor.getR(), drawColor.getG(), drawColor.getB(), drawColor.getA() };
+    std::vector<std::vector<float>> pixelShaderConstants(1);
+    pixelShaderConstants[0] = {std::begin(colorVector), std::end(colorVector)};
 
-    shader->setVertexShaderConstant(0, sizeof(Matrix4), 1, modelViewProj.m);
-    shader->setPixelShaderConstant(0, sizeof(colorVector), 1, colorVector);
+    std::vector<std::vector<float>> vertexShaderConstants(1);
+    vertexShaderConstants[0] = {std::begin(modelViewProj.m), std::end(modelViewProj.m)};
 
-    sharedEngine->getRenderer()->drawMeshBuffer(mesh);
+    sharedEngine->getRenderer()->addDrawCommand({texture},
+                                                shader,
+                                                pixelShaderConstants,
+                                                vertexShaderConstants,
+                                                blendState,
+                                                meshBuffer,
+                                                0,
+                                                graphics::Renderer::DrawMode::TRIANGLE_LIST,
+                                                0,
+                                                camera->getRenderTarget(),
+                                                camera->getRenderViewport(),
+                                                camera->getDepthWrite(),
+                                                camera->getDepthTest());
 }
 
-bool VideoNode::readFrame()
+bool Video::readFrame()
 {
     bool result = false;
     AVPacket packet;
@@ -234,7 +248,7 @@ bool VideoNode::readFrame()
     // Find the nearest frame
     if (av_read_frame(formatCtx, &packet) >= 0)
     {
-        log("Packet pts: %" PRId64, packet.pts);
+        Log() << "Packet pts: " << packet.pts;
 
         // Is this a packet from the video stream?
         if (packet.stream_index == videoStream)
@@ -245,22 +259,22 @@ bool VideoNode::readFrame()
             // Did we get a video frame?
             if (frameFinished)
             {
-                log("Frame decoded");
+                Log() << "Frame decoded";
 
                 if (frame->pts == AV_NOPTS_VALUE)
                 {
-                    log("No pts, pkt_pts: %" PRId64 ", pkt_dts: %" PRId64, frame->pkt_pts, frame->pkt_dts);
+                    Log() << "No pts, pkt_pts: " << frame->pkt_pts << ", pkt_dts: " << frame->pkt_dts;
                 }
                 else
                 {
-                    log("pts: %" PRId64 " , pkt_pts: %" PRId64 ", pkt_dts: %" PRId64, frame->pts, frame->pkt_pts, frame->pkt_dts);
+                    Log() << "pts: " << frame->pts << " , pkt_pts: " << frame->pkt_pts << ", pkt_dts: " << frame->pkt_dts;
                 }
 
                 AVFrame* frameRGB = av_frame_alloc();
 
                 if (frameRGB == NULL)
                 {
-                    log("Failed to alloc frame");
+                    Log() << "Failed to alloc frame";
                 }
 
                 avpicture_alloc((AVPicture*)frameRGB, AV_PIX_FMT_RGBA /*AV_PIX_FMT_RGB24*/, codecCtx->width, codecCtx->height);

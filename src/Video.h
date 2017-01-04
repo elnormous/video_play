@@ -14,25 +14,30 @@ extern "C"
 #include <libavcodec/avcodec.h>
 }
 
-class VideoNode: public ouzel::scene::Drawable
+class Video: public ouzel::scene::Component
 {
 public:
-    VideoNode();
-    virtual ~VideoNode();
+    Video();
+    virtual ~Video();
 
-    virtual bool init();
+    virtual bool init(const std::string& stream);
 
     virtual void update(float delta);
-    virtual void draw(const ouzel::Matrix4& projectionMatrix, const ouzel::Matrix4& transformMatrix, const ouzel::graphics::Color& drawColor) override;
+    virtual void draw(const ouzel::Matrix4& transformMatrix,
+                      const ouzel::Color& drawColor,
+                      ouzel::scene::Camera* camera) override;
 
 protected:
     bool readFrame();
 
     ouzel::graphics::TexturePtr texture;
     ouzel::graphics::ShaderPtr shader;
-    ouzel::graphics::MeshBufferPtr mesh;
+    ouzel::graphics::BlendStatePtr blendState;
+    ouzel::graphics::MeshBufferPtr meshBuffer;
+    ouzel::graphics::IndexBufferPtr indexBuffer;
+    ouzel::graphics::VertexBufferPtr vertexBuffer;
 
-    ouzel::UpdateCallbackPtr updateCallback;
+    ouzel::UpdateCallback updateCallback;
 
     int videoStream;
     AVFormatContext* formatCtx = nullptr;

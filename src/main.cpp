@@ -2,18 +2,24 @@
 //  native_play
 //
 
-#include "Application.h"
+#include "Player.h"
 
 ouzel::Engine engine;
-Application application;
+std::unique_ptr<Player> player;
 
 void ouzelMain(std::vector<std::string> const& args)
 {
+    if (args.size() < 2)
+    {
+        ouzel::Log() << "Too few arguments";
+        return;
+    }
+
     ouzel::Settings settings;
     settings.size = ouzel::Size2(800.0f, 600.0f);
     settings.resizable = true;
 
     engine.init(settings);
 
-    application.begin();
+    player.reset(new Player(args[1]));
 }
