@@ -47,5 +47,4 @@ protected:
     struct SwsContext* scalerCtx = nullptr;
 
     std::queue<AVFrame*> frames;
-    float sinceLastFrame = 0.0f;
 };

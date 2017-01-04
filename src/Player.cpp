@@ -25,12 +25,14 @@ Player::Player(const std::string& stream):
     sharedEngine->getWindow()->setTitle("Sample");
 
     sharedEngine->getSceneManager()->setScene(&scene);
-    scene.addLayer(&layer);
 
     video.init(stream);
     videoNode.addComponent(&video);
+    layer.addCamera(&camera);
     layer.addChild(&videoNode);
+    scene.addLayer(&layer);
 
+    uiLayer.addCamera(&uiCamera);
     scene.addLayer(&uiLayer);
 
     button.setPosition(Vector2(-200.0f, -200.0f));

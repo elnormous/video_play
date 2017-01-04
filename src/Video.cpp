@@ -43,12 +43,17 @@ bool Video::init(const std::string& stream)
 
     std::vector<uint16_t> indices = {0, 1, 2, 1, 3, 2};
 
+    Size2 size(800.0, 600.0);
+
     std::vector<VertexPCT> vertices = {
-        VertexPCT(Vector3(-1.0f, -1.0f, 0.0f), Color(255, 255, 255, 255), Vector2(0.0f, 1.0f)),
-        VertexPCT(Vector3(1.0f, -1.0f, 0.0f), Color(255, 255, 255, 255), Vector2(1.0f, 1.0f)),
-        VertexPCT(Vector3(-1.0f, 1.0f, 0.0f),  Color(255, 255, 255, 255), Vector2(0.0f, 0.0f)),
-        VertexPCT(Vector3(1.0f, 1.0f, 0.0f),  Color(255, 255, 255, 255), Vector2(1.0f, 0.0f))
+        VertexPCT(Vector3(-size.width() / 2.0f, -size.height() / 2.0f, 0.0f), Color(255, 255, 255, 255), Vector2(0.0f, 1.0f)),
+        VertexPCT(Vector3(size.width() / 2.0f, -size.height() / 2.0f, 0.0f), Color(255, 255, 255, 255), Vector2(1.0f, 1.0f)),
+        VertexPCT(Vector3(-size.width() / 2.0f, size.height() / 2.0f, 0.0f),  Color(255, 255, 255, 255), Vector2(0.0f, 0.0f)),
+        VertexPCT(Vector3(size.width() / 2.0f, size.height() / 2.0f, 0.0f),  Color(255, 255, 255, 255), Vector2(1.0f, 0.0f))
     };
+
+    boundingBox.set(Vector2(-size.width() / 2.0f, -size.height() / 2.0f),
+                    Vector2(size.width() / 2.0f, size.height() / 2.0f));
 
     meshBuffer = sharedEngine->getRenderer()->createMeshBuffer();
     indexBuffer = sharedEngine->getRenderer()->createIndexBuffer();
@@ -162,9 +167,6 @@ bool Video::init(const std::string& stream)
     return true;
 }
 
-const float FPS = 25.0f;
-const float FRAME_INTERVAL = 1.0f / FPS;
-
 void Video::update(float delta)
 {
     if (!formatCtx)
@@ -174,18 +176,15 @@ void Video::update(float delta)
 
     readFrame();
 
-    sinceLastFrame += delta;
-
-    while (sinceLastFrame >= FRAME_INTERVAL)
+    while (!frames.empty())
     {
-        sinceLastFrame -= FRAME_INTERVAL;
+        AVFrame* frame = frames.front();
 
-        if (!frames.empty())
+        frames.pop();
+
+        if (frame)
         {
-            AVFrame* frame = frames.front();
-            frames.pop();
-
-            if (sinceLastFrame < FRAME_INTERVAL)
+            //if (sinceLastFrame < FRAME_INTERVAL)
             {
                 std::vector<uint8_t> data(frame->data[0],
                                           frame->data[0] + frame->width * frame->height * 4);
@@ -193,20 +192,9 @@ void Video::update(float delta)
                 texture->setData(data, ouzel::Size2(frame->width, frame->height));
             }
 
-            if (frame)
-            {
-                avpicture_free((AVPicture*)frame);
-                av_frame_free(&frame);
-            }
+            avpicture_free((AVPicture*)frame);
+            av_frame_free(&frame);
         }
-    }
-
-    while (frames.size() > 25)
-    {
-        AVFrame* frame = frames.front();
-        frames.pop();
-
-        if (frame) av_frame_free(&frame);
     }
 }
 
@@ -248,7 +236,7 @@ bool Video::readFrame()
     // Find the nearest frame
     if (av_read_frame(formatCtx, &packet) >= 0)
     {
-        Log() << "Packet pts: " << packet.pts;
+        //Log() << "Packet pts: " << packet.pts;
 
         // Is this a packet from the video stream?
         if (packet.stream_index == videoStream)
@@ -259,15 +247,13 @@ bool Video::readFrame()
             // Did we get a video frame?
             if (frameFinished)
             {
-                Log() << "Frame decoded";
-
                 if (frame->pts == AV_NOPTS_VALUE)
                 {
-                    Log() << "No pts, pkt_dts: " << frame->pkt_dts;
+                    //Log() << "No pts, pkt_dts: " << frame->pkt_dts;
                 }
                 else
                 {
-                    Log() << "pts: " << frame->pts << ", pkt_dts: " << frame->pkt_dts;
+                    //Log() << "pts: " << frame->pts << ", pkt_dts: " << frame->pkt_dts;
                 }
 
                 AVFrame* frameRGBA = av_frame_alloc();
@@ -283,6 +269,9 @@ bool Video::readFrame()
                 frameRGBA->height = frame->height;
 
                 sws_scale(scalerCtx, frame->data, frame->linesize, 0, frame->height, frameRGBA->data, frameRGBA->linesize);
+
+                frameRGBA->pts = frame->pts;
+                frameRGBA->pkt_dts = frame->pkt_dts;
 
                 frames.push(frameRGBA);
 
