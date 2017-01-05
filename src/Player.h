@@ -23,6 +23,8 @@ protected:
 
     ouzel::scene::Node videoNode;
     Video video;
+    ouzel::scene::Rotate rotate;
+    ouzel::scene::Repeat repeat;
 
     ouzel::scene::Layer uiLayer;
     ouzel::scene::Camera uiCamera;

@@ -12,7 +12,9 @@ using namespace gui;
 using namespace input;
 
 Player::Player(const std::string& stream):
-    button("button.png", "button.png", "button_down.png", "button.png", "", Color(255, 255, 255, 255), "")
+    button("button.png", "button.png", "button_down.png", "button.png", "", Color(255, 255, 255, 255), ""),
+    rotate(1.0f, Vector3(0.0f, TAU, 0.0f)),
+    repeat(&rotate, 100)
 {
     eventHandler.keyboardHandler = std::bind(&Player::handleKeyboard, this, std::placeholders::_1, std::placeholders::_2);
     eventHandler.mouseHandler = std::bind(&Player::handleMouse, this, std::placeholders::_1, std::placeholders::_2);
@@ -28,15 +30,24 @@ Player::Player(const std::string& stream):
 
     video.init(stream);
     videoNode.addComponent(&video);
+
+    camera.setType(Camera::Type::PERSPECTIVE);
+    camera.setNearPlane(1.0f);
+    camera.setFarPlane(1000.0f);
+    camera.setPosition(Vector3(0.0f, 0.0f, -180.0f));
+
     layer.addCamera(&camera);
     layer.addChild(&videoNode);
+
+    videoNode.animate(&repeat);
+
     scene.addLayer(&layer);
 
     uiLayer.addCamera(&uiCamera);
     scene.addLayer(&uiLayer);
 
     button.setPosition(Vector2(-200.0f, -200.0f));
-    button.setScale(Vector2(0.3f, 0.3f));
+    button.setScale(Vector2(0.1f, 0.1f));
     uiLayer.addChild(&button);
 
     sharedEngine->getInput()->startGamepadDiscovery();

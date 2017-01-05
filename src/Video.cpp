@@ -43,7 +43,7 @@ bool Video::init(const std::string& stream)
 
     std::vector<uint16_t> indices = {0, 1, 2, 1, 3, 2};
 
-    Size2 size(800.0, 600.0);
+    Size2 size(192.0f, 108.0f);
 
     std::vector<VertexPCT> vertices = {
         VertexPCT(Vector3(-size.width() / 2.0f, -size.height() / 2.0f, 0.0f), Color(255, 255, 255, 255), Vector2(0.0f, 1.0f)),
