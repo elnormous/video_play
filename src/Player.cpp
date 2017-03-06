@@ -12,7 +12,7 @@ using namespace gui;
 using namespace input;
 
 Player::Player(const std::string& stream):
-    button("button.png", "button.png", "button_down.png", "button.png", "", Color(255, 255, 255, 255), ""),
+    button("button.png", "button.png", "button_down.png", "button.png", "", "", Color(255, 255, 255, 255)),
     rotate(1.0f, Vector3(0.0f, TAU, 0.0f)),
     repeat(&rotate, 100)
 {
@@ -39,7 +39,8 @@ Player::Player(const std::string& stream):
     layer.addCamera(&camera);
     layer.addChild(&videoNode);
 
-    videoNode.animate(&repeat);
+    videoNode.addComponent(&repeat);
+    repeat.start();
 
     scene.addLayer(&layer);
 

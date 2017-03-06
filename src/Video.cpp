@@ -35,9 +35,6 @@ Video::~Video()
 
 bool Video::init(const std::string& stream)
 {
-    updateCallback.callback = std::bind(&Video::update, this, std::placeholders::_1);
-    sharedEngine->scheduleUpdate(&updateCallback);
-
     shader = sharedEngine->getCache()->getShader(SHADER_TEXTURE);
     blendState = sharedEngine->getCache()->getBlendState(graphics::BLEND_ALPHA);
 
@@ -55,13 +52,14 @@ bool Video::init(const std::string& stream)
     boundingBox.set(Vector2(-size.width() / 2.0f, -size.height() / 2.0f),
                     Vector2(size.width() / 2.0f, size.height() / 2.0f));
 
-    meshBuffer = sharedEngine->getRenderer()->createMeshBuffer();
-    indexBuffer = sharedEngine->getRenderer()->createIndexBuffer();
-    vertexBuffer = sharedEngine->getRenderer()->createVertexBuffer();
+    indexBuffer = std::make_shared<ouzel::graphics::Buffer>();
+    indexBuffer->initFromBuffer(Buffer::Usage::INDEX, indices.data(), static_cast<uint32_t>(ouzel::getVectorSize(indices)), false);
 
-    indexBuffer->initFromBuffer(indices.data(), sizeof(uint16_t), static_cast<uint32_t>(indices.size()), false);
-    vertexBuffer->initFromBuffer(vertices.data(), VertexPCT::ATTRIBUTES, static_cast<uint32_t>(vertices.size()), true);
-    meshBuffer->init(indexBuffer, vertexBuffer);
+    vertexBuffer = std::make_shared<ouzel::graphics::Buffer>();
+    vertexBuffer->initFromBuffer(Buffer::Usage::VERTEX, vertices.data(), static_cast<uint32_t>(ouzel::getVectorSize(vertices)), true);
+
+    meshBuffer = std::make_shared<ouzel::graphics::MeshBuffer>();
+    meshBuffer->init(sizeof(uint16_t), indexBuffer, ouzel::graphics::VertexPCT::ATTRIBUTES, vertexBuffer);
 
     // Register all formats and codecs
     av_register_all();
@@ -136,7 +134,7 @@ bool Video::init(const std::string& stream)
         return false;
     }
 
-    texture = ouzel::sharedEngine->getRenderer()->createTexture();
+    texture = std::make_shared<ouzel::graphics::Texture>();
     texture->init(Size2(codecCtx->width, codecCtx->height), true, false);
 
     scalerCtx = sws_getContext(codecCtx->width,
@@ -163,6 +161,9 @@ bool Video::init(const std::string& stream)
     }
 
     //setScale(Vector2(codecCtx->width / 2.0f, codecCtx->height / 2.0f));
+
+    updateCallback.callback = std::bind(&Video::update, this, std::placeholders::_1);
+    sharedEngine->scheduleUpdate(&updateCallback);
 
     return true;
 }

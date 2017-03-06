@@ -30,12 +30,12 @@ public:
 protected:
     bool readFrame();
 
-    ouzel::graphics::TexturePtr texture;
-    ouzel::graphics::ShaderPtr shader;
-    ouzel::graphics::BlendStatePtr blendState;
-    ouzel::graphics::MeshBufferPtr meshBuffer;
-    ouzel::graphics::IndexBufferPtr indexBuffer;
-    ouzel::graphics::VertexBufferPtr vertexBuffer;
+    std::shared_ptr<ouzel::graphics::Texture> texture;
+    std::shared_ptr<ouzel::graphics::Shader> shader;
+    std::shared_ptr<ouzel::graphics::BlendState> blendState;
+    std::shared_ptr<ouzel::graphics::MeshBuffer> meshBuffer;
+    std::shared_ptr<ouzel::graphics::Buffer> indexBuffer;
+    std::shared_ptr<ouzel::graphics::Buffer> vertexBuffer;
 
     ouzel::UpdateCallback updateCallback;
 

@@ -1,0 +1,3 @@
+[submodule "external/ouzel"]
+	path = external/ouzel
+	url = https://github.com/elnormous/ouzel.git

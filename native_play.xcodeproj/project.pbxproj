@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		303678301E1D078000BDE579 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3036782F1E1D078000BDE579 /* OpenAL.framework */; };
+		303933CB1E6DA4D8000C9A8E /* libouzel_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 303933C81E6DA4CF000C9A8E /* libouzel_macos.a */; };
+		303933CC1E6DA4DC000C9A8E /* libouzel_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 303933C61E6DA4CF000C9A8E /* libouzel_ios.a */; };
+		303933CD1E6DA4DF000C9A8E /* libouzel_tvos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 303933CA1E6DA4CF000C9A8E /* libouzel_tvos.a */; };
 		3047F6CB1C469FBB00774E3D /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F6B61C469FBB00774E3D /* Player.cpp */; };
 		3047F6CC1C469FBB00774E3D /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F6B61C469FBB00774E3D /* Player.cpp */; };
 		3047F6CD1C469FBB00774E3D /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F6B61C469FBB00774E3D /* Player.cpp */; };
@@ -20,7 +23,6 @@
 		3047F70A1C46A0D100774E3D /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F7091C46A0D100774E3D /* GameController.framework */; };
 		3047F70C1C46A0EC00774E3D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F70B1C46A0EC00774E3D /* Cocoa.framework */; };
 		3047F70E1C46A0F400774E3D /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F70D1C46A0F400774E3D /* OpenGL.framework */; };
-		3047F7271C46A31F00774E3D /* libouzel_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F71C1C46A31300774E3D /* libouzel_macos.a */; };
 		3047F72A1C46A4EA00774E3D /* Video.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F7281C46A4EA00774E3D /* Video.cpp */; };
 		3047F72B1C46A4EA00774E3D /* Video.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F7281C46A4EA00774E3D /* Video.cpp */; };
 		3047F72C1C46A4EA00774E3D /* Video.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F7281C46A4EA00774E3D /* Video.cpp */; };
@@ -42,23 +44,23 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3047F71B1C46A31300774E3D /* PBXContainerItemProxy */ = {
+		303933C51E6DA4CF000C9A8E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 3047F7121C46A31300774E3D /* ouzel.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 304A8E251C237C30008B1151;
-			remoteInfo = ouzel_osx;
-		};
-		3047F71D1C46A31300774E3D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3047F7121C46A31300774E3D /* ouzel.xcodeproj */;
+			containerPortal = 303933BF1E6DA4CF000C9A8E /* ouzel.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 303B75331C2A3C5800FEDE92;
 			remoteInfo = ouzel_ios;
 		};
-		3047F71F1C46A31300774E3D /* PBXContainerItemProxy */ = {
+		303933C71E6DA4CF000C9A8E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 3047F7121C46A31300774E3D /* ouzel.xcodeproj */;
+			containerPortal = 303933BF1E6DA4CF000C9A8E /* ouzel.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 304A8E251C237C30008B1151;
+			remoteInfo = ouzel_macos;
+		};
+		303933C91E6DA4CF000C9A8E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 303933BF1E6DA4CF000C9A8E /* ouzel.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 303B76801C355A3B00FEDE92;
 			remoteInfo = ouzel_tvos;
@@ -69,6 +71,7 @@
 		303678281E1D074700BDE579 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS10.1.sdk/System/Library/Frameworks/OpenAL.framework; sourceTree = DEVELOPER_DIR; };
 		3036782D1E1D075400BDE579 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS10.1.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
 		3036782F1E1D078000BDE579 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		303933BF1E6DA4CF000C9A8E /* ouzel.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ouzel.xcodeproj; path = external/ouzel/build/ouzel.xcodeproj; sourceTree = "<group>"; };
 		303B76201C34CFE300FEDE92 /* native_play_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = native_play_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		303B76A01C355AA400FEDE92 /* native_play_tvos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = native_play_tvos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3047F6B61C469FBB00774E3D /* Player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Player.cpp; sourceTree = "<group>"; };
@@ -86,7 +89,6 @@
 		3047F7091C46A0D100774E3D /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
 		3047F70B1C46A0EC00774E3D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		3047F70D1C46A0F400774E3D /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		3047F7121C46A31300774E3D /* ouzel.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ouzel.xcodeproj; path = ../ouzel/build/ouzel.xcodeproj; sourceTree = "<group>"; };
 		3047F7281C46A4EA00774E3D /* Video.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Video.cpp; sourceTree = "<group>"; };
 		3047F7291C46A4EA00774E3D /* Video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Video.h; sourceTree = "<group>"; };
 		3047F72D1C46A5F900774E3D /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = ../libav/libavcodec/libavcodec.a; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				303933CC1E6DA4DC000C9A8E /* libouzel_ios.a in Frameworks */,
 				307BD7EB1CBFCF570071F0BB /* Metal.framework in Frameworks */,
 				307BD7EC1CBFCF570071F0BB /* MetalKit.framework in Frameworks */,
 			);
@@ -120,6 +123,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				303933CD1E6DA4DF000C9A8E /* libouzel_tvos.a in Frameworks */,
 				307BD7EF1CBFCF600071F0BB /* Metal.framework in Frameworks */,
 				307BD7F01CBFCF600071F0BB /* MetalKit.framework in Frameworks */,
 			);
@@ -129,13 +133,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				303933CB1E6DA4D8000C9A8E /* libouzel_macos.a in Frameworks */,
 				303678301E1D078000BDE579 /* OpenAL.framework in Frameworks */,
 				307BD7E41CBFCF4F0071F0BB /* Metal.framework in Frameworks */,
 				307BD7E51CBFCF4F0071F0BB /* MetalKit.framework in Frameworks */,
 				3047F7351C46A7CC00774E3D /* CoreFoundation.framework in Frameworks */,
 				3047F7331C46A7C500774E3D /* VideoDecodeAcceleration.framework in Frameworks */,
 				3047F7311C46A7BD00774E3D /* CoreVideo.framework in Frameworks */,
-				3047F7271C46A31F00774E3D /* libouzel_macos.a in Frameworks */,
 				3047F70E1C46A0F400774E3D /* OpenGL.framework in Frameworks */,
 				3047F70C1C46A0EC00774E3D /* Cocoa.framework in Frameworks */,
 				3047F70A1C46A0D100774E3D /* GameController.framework in Frameworks */,
@@ -145,6 +149,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		303933C01E6DA4CF000C9A8E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				303933C61E6DA4CF000C9A8E /* libouzel_ios.a */,
+				303933C81E6DA4CF000C9A8E /* libouzel_macos.a */,
+				303933CA1E6DA4CF000C9A8E /* libouzel_tvos.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		3047F6B81C469FBB00774E3D /* ios */ = {
 			isa = PBXGroup;
 			children = (
@@ -215,20 +229,10 @@
 			path = src;
 			sourceTree = "<group>";
 		};
-		3047F7131C46A31300774E3D /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				3047F71E1C46A31300774E3D /* libouzel_ios.a */,
-				3047F71C1C46A31300774E3D /* libouzel_macos.a */,
-				3047F7201C46A31300774E3D /* libouzel_tvos.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		304A8E011C237B95008B1151 = {
 			isa = PBXGroup;
 			children = (
-				3047F7121C46A31300774E3D /* ouzel.xcodeproj */,
+				303933BF1E6DA4CF000C9A8E /* ouzel.xcodeproj */,
 				3047F7101C46A1C900774E3D /* src */,
 				3047F70F1C46A1B800774E3D /* Frameworks */,
 				30EDFC401C6CDC0F008E9753 /* Resources */,
@@ -339,8 +343,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 3047F7131C46A31300774E3D /* Products */;
-					ProjectRef = 3047F7121C46A31300774E3D /* ouzel.xcodeproj */;
+					ProductGroup = 303933C01E6DA4CF000C9A8E /* Products */;
+					ProjectRef = 303933BF1E6DA4CF000C9A8E /* ouzel.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -353,25 +357,25 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		3047F71C1C46A31300774E3D /* libouzel_macos.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libouzel_macos.a;
-			remoteRef = 3047F71B1C46A31300774E3D /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		3047F71E1C46A31300774E3D /* libouzel_ios.a */ = {
+		303933C61E6DA4CF000C9A8E /* libouzel_ios.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libouzel_ios.a;
-			remoteRef = 3047F71D1C46A31300774E3D /* PBXContainerItemProxy */;
+			remoteRef = 303933C51E6DA4CF000C9A8E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		3047F7201C46A31300774E3D /* libouzel_tvos.a */ = {
+		303933C81E6DA4CF000C9A8E /* libouzel_macos.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libouzel_macos.a;
+			remoteRef = 303933C71E6DA4CF000C9A8E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		303933CA1E6DA4CF000C9A8E /* libouzel_tvos.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libouzel_tvos.a;
-			remoteRef = 3047F71F1C46A31300774E3D /* PBXContainerItemProxy */;
+			remoteRef = 303933C91E6DA4CF000C9A8E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -453,7 +457,7 @@
 				COMPRESS_PNG_FILES = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/ios/Prefix.pch;
-				HEADER_SEARCH_PATHS = /Users/elviss/Projects/ouzel/ouzel;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = src/ios/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.boolgames.ouzel;
@@ -474,7 +478,7 @@
 				COMPRESS_PNG_FILES = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/ios/Prefix.pch;
-				HEADER_SEARCH_PATHS = /Users/elviss/Projects/ouzel/ouzel;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = src/ios/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.boolgames.ouzel;
@@ -495,7 +499,7 @@
 				COMPRESS_PNG_FILES = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/ios/Prefix.pch;
-				HEADER_SEARCH_PATHS = /Users/elviss/Projects/ouzel/ouzel;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = src/tvos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.boolgames.ouzel;
@@ -515,7 +519,7 @@
 				COMPRESS_PNG_FILES = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/ios/Prefix.pch;
-				HEADER_SEARCH_PATHS = /Users/elviss/Projects/ouzel/ouzel;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = src/tvos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.boolgames.ouzel;
@@ -560,6 +564,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = external/ouzel/ouzel;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -596,6 +601,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = external/ouzel/ouzel;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
@@ -610,7 +616,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/osx/Prefix.pch;
 				HEADER_SEARCH_PATHS = (
-					/Users/elviss/Projects/ouzel/ouzel,
+					"$(inherited)",
 					/opt/local/include,
 					/usr/local/include,
 				);
@@ -648,7 +654,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/osx/Prefix.pch;
 				HEADER_SEARCH_PATHS = (
-					/Users/elviss/Projects/ouzel/ouzel,
+					"$(inherited)",
 					/opt/local/include,
 					/usr/local/include,
 				);
