@@ -36,7 +36,7 @@ Player::Player(const std::string& stream):
     camera.setFarPlane(1000.0f);
     camera.setPosition(Vector3(0.0f, 0.0f, -180.0f));
 
-    layer.addCamera(&camera);
+    layer.addChild(&camera);
     layer.addChild(&videoNode);
 
     videoNode.addComponent(&repeat);
@@ -44,7 +44,7 @@ Player::Player(const std::string& stream):
 
     scene.addLayer(&layer);
 
-    uiLayer.addCamera(&uiCamera);
+    uiLayer.addChild(&uiCamera);
     scene.addLayer(&uiLayer);
 
     button.setPosition(Vector2(-200.0f, -200.0f));
@@ -143,7 +143,7 @@ bool Player::handleGamepad(ouzel::Event::Type type, const GamepadEvent& event) c
             case GamepadButton::LEFT_THUMB_RIGHT:
             case GamepadButton::RIGHT_THUMB_RIGHT:
                 break;
-            case GamepadButton::A:
+            case GamepadButton::FACE1:
                 break;
             default:
                 break;

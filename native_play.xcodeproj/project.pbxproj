@@ -20,7 +20,6 @@
 		3047F6D61C469FBB00774E3D /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F6BC1C469FBB00774E3D /* main.cpp */; };
 		3047F6D71C469FBB00774E3D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3047F6BE1C469FBB00774E3D /* Assets.xcassets */; };
 		3047F6DF1C469FBB00774E3D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3047F6C21C469FBB00774E3D /* Assets.xcassets */; };
-		3047F70A1C46A0D100774E3D /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F7091C46A0D100774E3D /* GameController.framework */; };
 		3047F70C1C46A0EC00774E3D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F70B1C46A0EC00774E3D /* Cocoa.framework */; };
 		3047F70E1C46A0F400774E3D /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F70D1C46A0F400774E3D /* OpenGL.framework */; };
 		3047F72A1C46A4EA00774E3D /* Video.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F7281C46A4EA00774E3D /* Video.cpp */; };
@@ -29,8 +28,9 @@
 		3047F7311C46A7BD00774E3D /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F7301C46A7BD00774E3D /* CoreVideo.framework */; };
 		3047F7331C46A7C500774E3D /* VideoDecodeAcceleration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F7321C46A7C500774E3D /* VideoDecodeAcceleration.framework */; };
 		3047F7351C46A7CC00774E3D /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047F7341C46A7CC00774E3D /* CoreFoundation.framework */; };
+		305B68CD1ECE9521003352A2 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 305B68CC1ECE9521003352A2 /* IOKit.framework */; };
+		305B68CF1ECE9558003352A2 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 305B68CE1ECE9558003352A2 /* QuartzCore.framework */; };
 		307BD7E41CBFCF4F0071F0BB /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 307BD7E21CBFCF4F0071F0BB /* Metal.framework */; };
-		307BD7E51CBFCF4F0071F0BB /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 307BD7E31CBFCF4F0071F0BB /* MetalKit.framework */; };
 		307BD7EB1CBFCF570071F0BB /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 307BD7E91CBFCF570071F0BB /* Metal.framework */; };
 		307BD7EC1CBFCF570071F0BB /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 307BD7EA1CBFCF570071F0BB /* MetalKit.framework */; };
 		307BD7EF1CBFCF600071F0BB /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 307BD7ED1CBFCF600071F0BB /* Metal.framework */; };
@@ -96,6 +96,8 @@
 		3047F7321C46A7C500774E3D /* VideoDecodeAcceleration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoDecodeAcceleration.framework; path = System/Library/Frameworks/VideoDecodeAcceleration.framework; sourceTree = SDKROOT; };
 		3047F7341C46A7CC00774E3D /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		304A8E0A1C237B95008B1151 /* native_play_osx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = native_play_osx.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		305B68CC1ECE9521003352A2 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		305B68CE1ECE9558003352A2 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		307BD7E21CBFCF4F0071F0BB /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		307BD7E31CBFCF4F0071F0BB /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		307BD7E91CBFCF570071F0BB /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/Metal.framework; sourceTree = DEVELOPER_DIR; };
@@ -133,16 +135,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				305B68CF1ECE9558003352A2 /* QuartzCore.framework in Frameworks */,
+				305B68CD1ECE9521003352A2 /* IOKit.framework in Frameworks */,
 				303933CB1E6DA4D8000C9A8E /* libouzel_macos.a in Frameworks */,
 				303678301E1D078000BDE579 /* OpenAL.framework in Frameworks */,
 				307BD7E41CBFCF4F0071F0BB /* Metal.framework in Frameworks */,
-				307BD7E51CBFCF4F0071F0BB /* MetalKit.framework in Frameworks */,
 				3047F7351C46A7CC00774E3D /* CoreFoundation.framework in Frameworks */,
 				3047F7331C46A7C500774E3D /* VideoDecodeAcceleration.framework in Frameworks */,
 				3047F7311C46A7BD00774E3D /* CoreVideo.framework in Frameworks */,
 				3047F70E1C46A0F400774E3D /* OpenGL.framework in Frameworks */,
 				3047F70C1C46A0EC00774E3D /* Cocoa.framework in Frameworks */,
-				3047F70A1C46A0D100774E3D /* GameController.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -192,6 +194,8 @@
 		3047F70F1C46A1B800774E3D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				305B68CE1ECE9558003352A2 /* QuartzCore.framework */,
+				305B68CC1ECE9521003352A2 /* IOKit.framework */,
 				3036782F1E1D078000BDE579 /* OpenAL.framework */,
 				3036782D1E1D075400BDE579 /* AudioToolbox.framework */,
 				303678281E1D074700BDE579 /* OpenAL.framework */,

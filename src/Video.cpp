@@ -201,11 +201,27 @@ void Video::update(float delta)
 
 void Video::draw(const ouzel::Matrix4& transformMatrix,
                  const ouzel::Color& drawColor,
-                 ouzel::scene::Camera* camera)
+                 const ouzel::Matrix4& renderViewProjection,
+                 const std::shared_ptr<ouzel::graphics::Texture>& renderTarget,
+                 const ouzel::Rectangle& renderViewport,
+                 bool depthWrite,
+                 bool depthTest,
+                 bool wireframe,
+                 bool scissorTest,
+                 const ouzel::Rectangle& scissorRectangle)
 {
-    Component::draw(transformMatrix, drawColor, camera);
+    Component::draw(transformMatrix,
+                    drawColor,
+                    renderViewProjection,
+                    renderTarget,
+                    renderViewport,
+                    depthWrite,
+                    depthTest,
+                    wireframe,
+                    scissorTest,
+                    scissorRectangle);
 
-    Matrix4 modelViewProj = camera->getRenderViewProjection() * transformMatrix;
+    Matrix4 modelViewProj = renderViewProjection * transformMatrix;
     float colorVector[] = {drawColor.normR(), drawColor.normG(), drawColor.normB(), drawColor.normA()};
 
     std::vector<std::vector<float>> pixelShaderConstants(1);
@@ -223,10 +239,13 @@ void Video::draw(const ouzel::Matrix4& transformMatrix,
                                                 0,
                                                 graphics::Renderer::DrawMode::TRIANGLE_LIST,
                                                 0,
-                                                camera->getRenderTarget(),
-                                                camera->getRenderViewport(),
-                                                camera->getDepthWrite(),
-                                                camera->getDepthTest());
+                                                renderTarget,
+                                                renderViewport,
+                                                depthWrite,
+                                                depthTest,
+                                                wireframe,
+                                                scissorTest,
+                                                scissorRectangle);
 }
 
 bool Video::readFrame()

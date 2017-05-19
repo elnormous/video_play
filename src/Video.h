@@ -25,7 +25,14 @@ public:
     virtual void update(float delta);
     virtual void draw(const ouzel::Matrix4& transformMatrix,
                       const ouzel::Color& drawColor,
-                      ouzel::scene::Camera* camera) override;
+                      const ouzel::Matrix4& renderViewProjection,
+                      const std::shared_ptr<ouzel::graphics::Texture>& renderTarget,
+                      const ouzel::Rectangle& renderViewport,
+                      bool depthWrite,
+                      bool depthTest,
+                      bool wireframe,
+                      bool scissorTest,
+                      const ouzel::Rectangle& scissorRectangle) override;
 
 protected:
     bool readFrame();
