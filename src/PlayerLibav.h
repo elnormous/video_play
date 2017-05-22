@@ -6,10 +6,10 @@
 
 #include "Video.h"
 
-class Player: public ouzel::Noncopyable
+class PlayerLibav: public ouzel::Noncopyable
 {
 public:
-    Player(const std::string& stream);
+    PlayerLibav(const std::string& stream);
 
     bool handleKeyboard(ouzel::Event::Type type, const ouzel::KeyboardEvent& event);
     bool handleMouse(ouzel::Event::Type type, const ouzel::MouseEvent& event) const;

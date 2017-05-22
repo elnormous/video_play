@@ -11,9 +11,9 @@
 		303933CB1E6DA4D8000C9A8E /* libouzel_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 303933C81E6DA4CF000C9A8E /* libouzel_macos.a */; };
 		303933CC1E6DA4DC000C9A8E /* libouzel_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 303933C61E6DA4CF000C9A8E /* libouzel_ios.a */; };
 		303933CD1E6DA4DF000C9A8E /* libouzel_tvos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 303933CA1E6DA4CF000C9A8E /* libouzel_tvos.a */; };
-		3047F6CB1C469FBB00774E3D /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F6B61C469FBB00774E3D /* Player.cpp */; };
-		3047F6CC1C469FBB00774E3D /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F6B61C469FBB00774E3D /* Player.cpp */; };
-		3047F6CD1C469FBB00774E3D /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F6B61C469FBB00774E3D /* Player.cpp */; };
+		3047F6CB1C469FBB00774E3D /* PlayerLibav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F6B61C469FBB00774E3D /* PlayerLibav.cpp */; };
+		3047F6CC1C469FBB00774E3D /* PlayerLibav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F6B61C469FBB00774E3D /* PlayerLibav.cpp */; };
+		3047F6CD1C469FBB00774E3D /* PlayerLibav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F6B61C469FBB00774E3D /* PlayerLibav.cpp */; };
 		3047F6CF1C469FBB00774E3D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3047F6B91C469FBB00774E3D /* Assets.xcassets */; };
 		3047F6D41C469FBB00774E3D /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F6BC1C469FBB00774E3D /* main.cpp */; };
 		3047F6D51C469FBB00774E3D /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3047F6BC1C469FBB00774E3D /* main.cpp */; };
@@ -74,8 +74,8 @@
 		303933BF1E6DA4CF000C9A8E /* ouzel.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ouzel.xcodeproj; path = external/ouzel/build/ouzel.xcodeproj; sourceTree = "<group>"; };
 		303B76201C34CFE300FEDE92 /* native_play_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = native_play_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		303B76A01C355AA400FEDE92 /* native_play_tvos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = native_play_tvos.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		3047F6B61C469FBB00774E3D /* Player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Player.cpp; sourceTree = "<group>"; };
-		3047F6B71C469FBB00774E3D /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
+		3047F6B61C469FBB00774E3D /* PlayerLibav.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlayerLibav.cpp; sourceTree = "<group>"; };
+		3047F6B71C469FBB00774E3D /* PlayerLibav.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerLibav.h; sourceTree = "<group>"; };
 		3047F6B91C469FBB00774E3D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3047F6BA1C469FBB00774E3D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3047F6BB1C469FBB00774E3D /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
@@ -219,8 +219,8 @@
 		3047F7101C46A1C900774E3D /* src */ = {
 			isa = PBXGroup;
 			children = (
-				3047F6B61C469FBB00774E3D /* Player.cpp */,
-				3047F6B71C469FBB00774E3D /* Player.h */,
+				3047F6B61C469FBB00774E3D /* PlayerLibav.cpp */,
+				3047F6B71C469FBB00774E3D /* PlayerLibav.h */,
 				3047F6B81C469FBB00774E3D /* ios */,
 				3047F6BC1C469FBB00774E3D /* main.cpp */,
 				3047F6BD1C469FBB00774E3D /* osx */,
@@ -424,7 +424,7 @@
 			files = (
 				3047F6D51C469FBB00774E3D /* main.cpp in Sources */,
 				3047F72B1C46A4EA00774E3D /* Video.cpp in Sources */,
-				3047F6CC1C469FBB00774E3D /* Player.cpp in Sources */,
+				3047F6CC1C469FBB00774E3D /* PlayerLibav.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -434,7 +434,7 @@
 			files = (
 				3047F6D61C469FBB00774E3D /* main.cpp in Sources */,
 				3047F72C1C46A4EA00774E3D /* Video.cpp in Sources */,
-				3047F6CD1C469FBB00774E3D /* Player.cpp in Sources */,
+				3047F6CD1C469FBB00774E3D /* PlayerLibav.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,7 +444,7 @@
 			files = (
 				3047F6D41C469FBB00774E3D /* main.cpp in Sources */,
 				3047F72A1C46A4EA00774E3D /* Video.cpp in Sources */,
-				3047F6CB1C469FBB00774E3D /* Player.cpp in Sources */,
+				3047F6CB1C469FBB00774E3D /* PlayerLibav.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -2,7 +2,7 @@
 //  native_play
 //
 
-#include "Player.h"
+#include "PlayerLibav.h"
 //#include "VideoTextureNode.h"
 
 using namespace ouzel;
@@ -11,15 +11,15 @@ using namespace scene;
 using namespace gui;
 using namespace input;
 
-Player::Player(const std::string& stream):
+PlayerLibav::PlayerLibav(const std::string& stream):
     button("button.png", "button.png", "button_down.png", "button.png", "", "", Color(255, 255, 255, 255)),
     rotate(1.0f, Vector3(0.0f, TAU, 0.0f)),
     repeat(&rotate, 100)
 {
-    eventHandler.keyboardHandler = std::bind(&Player::handleKeyboard, this, std::placeholders::_1, std::placeholders::_2);
-    eventHandler.mouseHandler = std::bind(&Player::handleMouse, this, std::placeholders::_1, std::placeholders::_2);
-    eventHandler.touchHandler = std::bind(&Player::handleTouch, this, std::placeholders::_1, std::placeholders::_2);
-    eventHandler.gamepadHandler = std::bind(&Player::handleGamepad, this, std::placeholders::_1, std::placeholders::_2);
+    eventHandler.keyboardHandler = std::bind(&PlayerLibav::handleKeyboard, this, std::placeholders::_1, std::placeholders::_2);
+    eventHandler.mouseHandler = std::bind(&PlayerLibav::handleMouse, this, std::placeholders::_1, std::placeholders::_2);
+    eventHandler.touchHandler = std::bind(&PlayerLibav::handleTouch, this, std::placeholders::_1, std::placeholders::_2);
+    eventHandler.gamepadHandler = std::bind(&PlayerLibav::handleGamepad, this, std::placeholders::_1, std::placeholders::_2);
 
     sharedEngine->getEventDispatcher()->addEventHandler(&eventHandler);
 
@@ -54,7 +54,7 @@ Player::Player(const std::string& stream):
     sharedEngine->getInput()->startGamepadDiscovery();
 }
 
-bool Player::handleKeyboard(ouzel::Event::Type type, const KeyboardEvent& event)
+bool PlayerLibav::handleKeyboard(ouzel::Event::Type type, const KeyboardEvent& event)
 {
     if (type == Event::Type::KEY_DOWN ||
         type == Event::Type::KEY_REPEAT)
@@ -111,17 +111,17 @@ bool Player::handleKeyboard(ouzel::Event::Type type, const KeyboardEvent& event)
     return true;
 }
 
-bool Player::handleMouse(ouzel::Event::Type type, const MouseEvent& event) const
+bool PlayerLibav::handleMouse(ouzel::Event::Type type, const MouseEvent& event) const
 {
     return true;
 }
 
-bool Player::handleTouch(ouzel::Event::Type type, const TouchEvent& event) const
+bool PlayerLibav::handleTouch(ouzel::Event::Type type, const TouchEvent& event) const
 {
     return true;
 }
 
-bool Player::handleGamepad(ouzel::Event::Type type, const GamepadEvent& event) const
+bool PlayerLibav::handleGamepad(ouzel::Event::Type type, const GamepadEvent& event) const
 {
     if (type == Event::Type::GAMEPAD_BUTTON_CHANGE)
     {
