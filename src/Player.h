@@ -4,12 +4,14 @@
 
 #pragma once
 
-#include "Video.h"
+#include "VideoLibav.h"
+#include "VideoLibvlc.h"
+//#include "VideoTextureNode.h"
 
-class PlayerLibav: public ouzel::Noncopyable
+class Player: public ouzel::Noncopyable
 {
 public:
-    PlayerLibav(const std::string& stream);
+    Player(const std::string& stream);
 
     bool handleKeyboard(ouzel::Event::Type type, const ouzel::KeyboardEvent& event);
     bool handleMouse(ouzel::Event::Type type, const ouzel::MouseEvent& event) const;
@@ -22,7 +24,8 @@ protected:
     ouzel::scene::Scene scene;
 
     ouzel::scene::Node videoNode;
-    Video video;
+    //VideoLibav video;
+    VideoLibvlc video;
     ouzel::scene::Rotate rotate;
     ouzel::scene::Repeat repeat;
 

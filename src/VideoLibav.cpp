@@ -2,7 +2,7 @@
 //  native_play
 //
 
-#include "Video.h"
+#include "VideoLibav.h"
 
 #include <cstdio>
 #include <cinttypes>
@@ -15,11 +15,11 @@ using namespace ouzel;
 using namespace scene;
 using namespace graphics;
 
-Video::Video()
+VideoLibav::VideoLibav()
 {
 }
 
-Video::~Video()
+VideoLibav::~VideoLibav()
 {
     // Free the YUV frame
     if (frame) av_frame_free(&frame);
@@ -33,7 +33,7 @@ Video::~Video()
     if (formatCtx) avformat_close_input(&formatCtx);
 }
 
-bool Video::init(const std::string& stream)
+bool VideoLibav::init(const std::string& stream)
 {
     shader = sharedEngine->getCache()->getShader(SHADER_TEXTURE);
     blendState = sharedEngine->getCache()->getBlendState(graphics::BLEND_ALPHA);
@@ -162,13 +162,13 @@ bool Video::init(const std::string& stream)
 
     //setScale(Vector2(codecCtx->width / 2.0f, codecCtx->height / 2.0f));
 
-    updateCallback.callback = std::bind(&Video::update, this, std::placeholders::_1);
+    updateCallback.callback = std::bind(&VideoLibav::update, this, std::placeholders::_1);
     sharedEngine->scheduleUpdate(&updateCallback);
 
     return true;
 }
 
-void Video::update(float delta)
+void VideoLibav::update(float delta)
 {
     if (!formatCtx)
     {
@@ -199,16 +199,16 @@ void Video::update(float delta)
     }
 }
 
-void Video::draw(const ouzel::Matrix4& transformMatrix,
-                 const ouzel::Color& drawColor,
-                 const ouzel::Matrix4& renderViewProjection,
-                 const std::shared_ptr<ouzel::graphics::Texture>& renderTarget,
-                 const ouzel::Rectangle& renderViewport,
-                 bool depthWrite,
-                 bool depthTest,
-                 bool wireframe,
-                 bool scissorTest,
-                 const ouzel::Rectangle& scissorRectangle)
+void VideoLibav::draw(const ouzel::Matrix4& transformMatrix,
+                      const ouzel::Color& drawColor,
+                      const ouzel::Matrix4& renderViewProjection,
+                      const std::shared_ptr<ouzel::graphics::Texture>& renderTarget,
+                      const ouzel::Rectangle& renderViewport,
+                      bool depthWrite,
+                      bool depthTest,
+                      bool wireframe,
+                      bool scissorTest,
+                      const ouzel::Rectangle& scissorRectangle)
 {
     Component::draw(transformMatrix,
                     drawColor,
@@ -248,7 +248,7 @@ void Video::draw(const ouzel::Matrix4& transformMatrix,
                                                 scissorRectangle);
 }
 
-bool Video::readFrame()
+bool VideoLibav::readFrame()
 {
     bool result = false;
     AVPacket packet;

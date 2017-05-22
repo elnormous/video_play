@@ -14,11 +14,11 @@ extern "C"
 #include <libavcodec/avcodec.h>
 }
 
-class Video: public ouzel::scene::Component
+class VideoLibav: public ouzel::scene::Component
 {
 public:
-    Video();
-    virtual ~Video();
+    VideoLibav();
+    virtual ~VideoLibav();
 
     virtual bool init(const std::string& stream);
 

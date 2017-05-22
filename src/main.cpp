@@ -2,10 +2,10 @@
 //  native_play
 //
 
-#include "PlayerLibav.h"
+#include "Player.h"
 
 ouzel::Engine engine;
-std::unique_ptr<PlayerLibav> player;
+std::unique_ptr<Player> player;
 
 void ouzelMain(std::vector<std::string> const& args)
 {
@@ -21,6 +21,6 @@ void ouzelMain(std::vector<std::string> const& args)
 
     if (engine.init(settings))
     {
-        player.reset(new PlayerLibav(args[1]));
+        player.reset(new Player(args[1]));
     }
 }
