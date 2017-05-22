@@ -32,6 +32,7 @@ void cleanup(void* opaque)
 static void* lock(void* opaque, void **p_pixels)
 {
     VideoLibvlc* video = reinterpret_cast<VideoLibvlc*>(opaque);
+    video->lock();
     *p_pixels = video->getBuffer().data();
 
     return nullptr; // picture id not needed
@@ -40,7 +41,7 @@ static void* lock(void* opaque, void **p_pixels)
 static void unlock(void *opaque, void *id, void *const *p_pixels)
 {
     VideoLibvlc* video = reinterpret_cast<VideoLibvlc*>(opaque);
-    video->upload();
+    video->unlock();
 
     assert(id == nullptr);
 }
@@ -108,7 +109,7 @@ bool VideoLibvlc::init(const std::string& stream)
     libvlc_media_release(m);
     m = nullptr;
 
-    libvlc_video_set_callbacks(mp, lock, unlock, display, this);
+    libvlc_video_set_callbacks(mp, ::lock, ::unlock, display, this);
     libvlc_video_set_format(mp, "RGBA", WIDTH, HEIGHT, WIDTH * 4);
     //libvlc_video_set_format_callbacks(mp, setup, cleanup);
 
@@ -148,6 +149,7 @@ void VideoLibvlc::draw(const ouzel::Matrix4& transformMatrix,
     {
         if (dirty)
         {
+            std::lock_guard<std::mutex> dataLock(dataMutex);
             texture->setData(buffer, Size2(WIDTH, HEIGHT));
             dirty = false;
         }
@@ -180,7 +182,13 @@ void VideoLibvlc::draw(const ouzel::Matrix4& transformMatrix,
     }
 }
 
-void VideoLibvlc::upload()
+void VideoLibvlc::lock()
 {
+    dataMutex.lock();
+}
+
+void VideoLibvlc::unlock()
+{
+    dataMutex.unlock();
     dirty = true;
 }
