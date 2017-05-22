@@ -25,7 +25,9 @@ public:
                       bool scissorTest,
                       const ouzel::Rectangle& scissorRectangle) override;
 
-    void upload(const std::vector<uint8_t>& data);
+    void upload();
+
+    std::vector<uint8_t>& getBuffer() { return buffer; }
 
 protected:
     std::shared_ptr<ouzel::graphics::Texture> texture;
@@ -38,4 +40,7 @@ protected:
     libvlc_instance_t* inst = nullptr;
     libvlc_media_player_t* mp = nullptr;
     libvlc_media_t* m = nullptr;
+
+    std::vector<uint8_t> buffer;
+    std::atomic<bool> dirty;
 };

@@ -15,10 +15,8 @@ using namespace ouzel;
 using namespace scene;
 using namespace graphics;
 
-const uint32_t WIDTH = 3840 / 2;
-const uint32_t HEIGHT = 2160 / 2;
-
-static std::vector<uint8_t> pixels;
+const uint32_t WIDTH = 3840;
+const uint32_t HEIGHT = 2160;
 
 /*unsigned setup(void** opaque, char* chroma, unsigned* width, unsigned* height, unsigned* pitches, unsigned* lines)
 {
@@ -33,7 +31,8 @@ void cleanup(void* opaque)
 
 static void* lock(void* opaque, void **p_pixels)
 {
-    *p_pixels = pixels.data();
+    VideoLibvlc* video = reinterpret_cast<VideoLibvlc*>(opaque);
+    *p_pixels = video->getBuffer().data();
 
     return nullptr; // picture id not needed
 }
@@ -41,7 +40,7 @@ static void* lock(void* opaque, void **p_pixels)
 static void unlock(void *opaque, void *id, void *const *p_pixels)
 {
     VideoLibvlc* video = reinterpret_cast<VideoLibvlc*>(opaque);
-    video->upload(pixels);
+    video->upload();
 
     assert(id == nullptr);
 }
@@ -51,7 +50,8 @@ static void display(void *opaque, void *id)
     assert(id == nullptr);
 }
 
-VideoLibvlc::VideoLibvlc()
+VideoLibvlc::VideoLibvlc():
+    dirty(false)
 {
 }
 
@@ -112,7 +112,7 @@ bool VideoLibvlc::init(const std::string& stream)
     libvlc_video_set_format(mp, "RGBA", WIDTH, HEIGHT, WIDTH * 4);
     //libvlc_video_set_format_callbacks(mp, setup, cleanup);
 
-    pixels.resize(WIDTH * HEIGHT * 4);
+    buffer.resize(WIDTH * HEIGHT * 4);
 
     texture = std::make_shared<ouzel::graphics::Texture>();
     texture->init(Size2(WIDTH, HEIGHT), true, false);
@@ -146,6 +146,12 @@ void VideoLibvlc::draw(const ouzel::Matrix4& transformMatrix,
 
     if (texture)
     {
+        if (dirty)
+        {
+            texture->setData(buffer, Size2(WIDTH, HEIGHT));
+            dirty = false;
+        }
+
         Matrix4 modelViewProj = renderViewProjection * transformMatrix;
         float colorVector[] = {drawColor.normR(), drawColor.normG(), drawColor.normB(), drawColor.normA()};
 
@@ -174,7 +180,7 @@ void VideoLibvlc::draw(const ouzel::Matrix4& transformMatrix,
     }
 }
 
-void VideoLibvlc::upload(const std::vector<uint8_t>& data)
+void VideoLibvlc::upload()
 {
-    texture->setData(data, Size2(WIDTH, HEIGHT));
+    dirty = true;
 }
