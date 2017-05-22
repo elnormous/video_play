@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <vlc/vlc.h>
+
 class VideoLibvlc: public ouzel::scene::Component
 {
 public:
@@ -12,7 +14,6 @@ public:
 
     virtual bool init(const std::string& stream);
 
-    virtual void update(float delta);
     virtual void draw(const ouzel::Matrix4& transformMatrix,
                       const ouzel::Color& drawColor,
                       const ouzel::Matrix4& renderViewProjection,
@@ -24,6 +25,8 @@ public:
                       bool scissorTest,
                       const ouzel::Rectangle& scissorRectangle) override;
 
+    void upload(const std::vector<uint8_t>& data);
+
 protected:
     std::shared_ptr<ouzel::graphics::Texture> texture;
     std::shared_ptr<ouzel::graphics::Shader> shader;
@@ -32,5 +35,7 @@ protected:
     std::shared_ptr<ouzel::graphics::Buffer> indexBuffer;
     std::shared_ptr<ouzel::graphics::Buffer> vertexBuffer;
 
-    ouzel::UpdateCallback updateCallback;
+    libvlc_instance_t* inst = nullptr;
+    libvlc_media_player_t* mp = nullptr;
+    libvlc_media_t* m = nullptr;
 };

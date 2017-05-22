@@ -39,7 +39,7 @@ Player::Player(const std::string& stream):
     layer.addChild(&videoNode);
 
     videoNode.addComponent(&repeat);
-    repeat.start();
+    //repeat.start();
 
     scene.addLayer(&layer);
 

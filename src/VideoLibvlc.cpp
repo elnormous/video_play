@@ -15,12 +15,55 @@ using namespace ouzel;
 using namespace scene;
 using namespace graphics;
 
+const uint32_t WIDTH = 3840 / 2;
+const uint32_t HEIGHT = 2160 / 2;
+
+static std::vector<uint8_t> pixels;
+
+/*unsigned setup(void** opaque, char* chroma, unsigned* width, unsigned* height, unsigned* pitches, unsigned* lines)
+{
+    pixels.resize((*width) * (*height) * 4);
+    
+    return 1;
+}*/
+
+void cleanup(void* opaque)
+{
+}
+
+static void* lock(void* opaque, void **p_pixels)
+{
+    *p_pixels = pixels.data();
+
+    return nullptr; // picture id not needed
+}
+
+static void unlock(void *opaque, void *id, void *const *p_pixels)
+{
+    VideoLibvlc* video = reinterpret_cast<VideoLibvlc*>(opaque);
+    video->upload(pixels);
+
+    assert(id == nullptr);
+}
+
+static void display(void *opaque, void *id)
+{
+    assert(id == nullptr);
+}
+
 VideoLibvlc::VideoLibvlc()
 {
 }
 
 VideoLibvlc::~VideoLibvlc()
 {
+    if (m) libvlc_media_release(m);
+    if (mp)
+    {
+        libvlc_media_player_stop(mp);
+        libvlc_media_player_release(mp);
+    }
+    if (inst) libvlc_release(inst);
 }
 
 bool VideoLibvlc::init(const std::string& stream)
@@ -51,18 +94,32 @@ bool VideoLibvlc::init(const std::string& stream)
     meshBuffer = std::make_shared<ouzel::graphics::MeshBuffer>();
     meshBuffer->init(sizeof(uint16_t), indexBuffer, ouzel::graphics::VertexPCT::ATTRIBUTES, vertexBuffer);
 
-    // TODO: load video
-    texture = std::make_shared<ouzel::graphics::Texture>();
-    texture->init(Size2(100, 100), true, false);
+    // Load the VLC engine
+    inst = libvlc_new(0, nullptr);
 
-    updateCallback.callback = std::bind(&VideoLibvlc::update, this, std::placeholders::_1);
-    sharedEngine->scheduleUpdate(&updateCallback);
+    // Create a new item
+    //m = libvlc_media_new_location(inst, stream.c_str());
+    m = libvlc_media_new_path(inst, stream.c_str());
+
+    // Create a media player playing environement
+    mp = libvlc_media_player_new_from_media(m);
+
+    // No need to keep the media now
+    libvlc_media_release(m);
+    m = nullptr;
+
+    libvlc_video_set_callbacks(mp, lock, unlock, display, this);
+    libvlc_video_set_format(mp, "RGBA", WIDTH, HEIGHT, WIDTH * 4);
+    //libvlc_video_set_format_callbacks(mp, setup, cleanup);
+
+    pixels.resize(WIDTH * HEIGHT * 4);
+
+    texture = std::make_shared<ouzel::graphics::Texture>();
+    texture->init(Size2(WIDTH, HEIGHT), true, false);
+
+    libvlc_media_player_play(mp);
 
     return true;
-}
-
-void VideoLibvlc::update(float delta)
-{
 }
 
 void VideoLibvlc::draw(const ouzel::Matrix4& transformMatrix,
@@ -87,29 +144,37 @@ void VideoLibvlc::draw(const ouzel::Matrix4& transformMatrix,
                     scissorTest,
                     scissorRectangle);
 
-    Matrix4 modelViewProj = renderViewProjection * transformMatrix;
-    float colorVector[] = {drawColor.normR(), drawColor.normG(), drawColor.normB(), drawColor.normA()};
+    if (texture)
+    {
+        Matrix4 modelViewProj = renderViewProjection * transformMatrix;
+        float colorVector[] = {drawColor.normR(), drawColor.normG(), drawColor.normB(), drawColor.normA()};
 
-    std::vector<std::vector<float>> pixelShaderConstants(1);
-    pixelShaderConstants[0] = {std::begin(colorVector), std::end(colorVector)};
+        std::vector<std::vector<float>> pixelShaderConstants(1);
+        pixelShaderConstants[0] = {std::begin(colorVector), std::end(colorVector)};
 
-    std::vector<std::vector<float>> vertexShaderConstants(1);
-    vertexShaderConstants[0] = {std::begin(modelViewProj.m), std::end(modelViewProj.m)};
+        std::vector<std::vector<float>> vertexShaderConstants(1);
+        vertexShaderConstants[0] = {std::begin(modelViewProj.m), std::end(modelViewProj.m)};
 
-    sharedEngine->getRenderer()->addDrawCommand({texture},
-                                                shader,
-                                                pixelShaderConstants,
-                                                vertexShaderConstants,
-                                                blendState,
-                                                meshBuffer,
-                                                0,
-                                                graphics::Renderer::DrawMode::TRIANGLE_LIST,
-                                                0,
-                                                renderTarget,
-                                                renderViewport,
-                                                depthWrite,
-                                                depthTest,
-                                                wireframe,
-                                                scissorTest,
-                                                scissorRectangle);
+        sharedEngine->getRenderer()->addDrawCommand({texture},
+                                                    shader,
+                                                    pixelShaderConstants,
+                                                    vertexShaderConstants,
+                                                    blendState,
+                                                    meshBuffer,
+                                                    0,
+                                                    graphics::Renderer::DrawMode::TRIANGLE_LIST,
+                                                    0,
+                                                    renderTarget,
+                                                    renderViewport,
+                                                    depthWrite,
+                                                    depthTest,
+                                                    wireframe,
+                                                    scissorTest,
+                                                    scissorRectangle);
+    }
+}
+
+void VideoLibvlc::upload(const std::vector<uint8_t>& data)
+{
+    texture->setData(data, Size2(WIDTH, HEIGHT));
 }

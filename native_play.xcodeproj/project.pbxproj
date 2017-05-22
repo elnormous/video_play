@@ -654,6 +654,7 @@
 					"-lbz2",
 					"-lfontconfig",
 					"-lpng",
+					"-lvlc",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.boolgames.ouzel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -692,6 +693,7 @@
 					"-lbz2",
 					"-lfontconfig",
 					"-lpng",
+					"-lvlc",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.boolgames.ouzel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
