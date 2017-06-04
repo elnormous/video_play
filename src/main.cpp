@@ -4,7 +4,6 @@
 
 #include "Player.h"
 
-ouzel::Engine engine;
 std::unique_ptr<Player> player;
 
 void ouzelMain(std::vector<std::string> const& args)
@@ -19,7 +18,7 @@ void ouzelMain(std::vector<std::string> const& args)
     settings.size = ouzel::Size2(800.0f, 600.0f);
     settings.resizable = true;
 
-    if (engine.init(settings))
+    if (ouzel::sharedEngine->init(settings))
     {
         player.reset(new Player(args[1]));
     }
