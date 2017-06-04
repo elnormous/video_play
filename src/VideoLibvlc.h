@@ -8,7 +8,6 @@
 #include <basetsd.h>
 typedef SSIZE_T ssize_t;
 #endif
-#include <cstdint>
 #include <vlc/vlc.h>
 
 class VideoLibvlc: public ouzel::scene::Component

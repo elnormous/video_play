@@ -69,22 +69,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>external\ouzel\ouzel;external\vlc\include;$(IncludePath)</IncludePath>
-    <LibraryPath>external\libvlc-sdk\lib\msvc;$(LibraryPath)</LibraryPath>
+    <LibraryPath>lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>external\ouzel\ouzel;external\vlc\include;$(IncludePath)</IncludePath>
-    <LibraryPath>external\libvlc-sdk\lib\msvc;$(LibraryPath)</LibraryPath>
+    <LibraryPath>lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>external\ouzel\ouzel;external\vlc\include;$(IncludePath)</IncludePath>
-    <LibraryPath>external\libvlc-sdk\lib\msvc;$(LibraryPath)</LibraryPath>
+    <LibraryPath>lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>external\ouzel\ouzel;external\vlc\include;$(IncludePath)</IncludePath>
-    <LibraryPath>external\libvlc-sdk\lib\msvc;$(LibraryPath)</LibraryPath>
+    <LibraryPath>lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
