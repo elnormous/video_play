@@ -4,13 +4,6 @@
 
 #include "VideoLibvlc.h"
 
-#include <cstdio>
-#include <cinttypes>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-
 using namespace ouzel;
 using namespace scene;
 using namespace graphics;
@@ -29,7 +22,7 @@ void cleanup(void* opaque)
 {
 }
 
-static void* lock(void* opaque, void **p_pixels)
+static void* lock(void* opaque, void** p_pixels)
 {
     VideoLibvlc* video = reinterpret_cast<VideoLibvlc*>(opaque);
     video->lock();
@@ -38,7 +31,7 @@ static void* lock(void* opaque, void **p_pixels)
     return nullptr; // picture id not needed
 }
 
-static void unlock(void *opaque, void *id, void *const *p_pixels)
+static void unlock(void* opaque, void* id, void* const* pixels)
 {
     VideoLibvlc* video = reinterpret_cast<VideoLibvlc*>(opaque);
     video->unlock();
@@ -116,7 +109,7 @@ bool VideoLibvlc::init(const std::string& stream)
     buffer.resize(WIDTH * HEIGHT * 4);
 
     texture = std::make_shared<ouzel::graphics::Texture>();
-    texture->init(Size2(WIDTH, HEIGHT), true, false);
+    texture->init(Size2(static_cast<float>(WIDTH), static_cast<float>(HEIGHT)), true, false);
 
     libvlc_media_player_play(mp);
 
@@ -150,7 +143,7 @@ void VideoLibvlc::draw(const ouzel::Matrix4& transformMatrix,
         if (dirty)
         {
             std::lock_guard<std::mutex> dataLock(dataMutex);
-            texture->setData(buffer, Size2(WIDTH, HEIGHT));
+            texture->setData(buffer, Size2(static_cast<float>(WIDTH), static_cast<float>(HEIGHT)));
             dirty = false;
         }
 
