@@ -12,7 +12,7 @@ using namespace input;
 
 Player::Player(const std::string& stream):
     button("button.png", "button.png", "button_down.png", "button.png", "", "", Color(255, 255, 255, 255)),
-    rotate(1.0f, Vector3(0.0f, TAU, 0.0f)),
+    rotate(10.0f, Vector3(0.0f, TAU, 0.0f)),
     repeat(&rotate, 100)
 {
     eventHandler.keyboardHandler = std::bind(&Player::handleKeyboard, this, std::placeholders::_1, std::placeholders::_2);
@@ -39,7 +39,7 @@ Player::Player(const std::string& stream):
     layer.addChild(&videoNode);
 
     videoNode.addComponent(&repeat);
-    //repeat.start();
+    repeat.start();
 
     scene.addLayer(&layer);
 
