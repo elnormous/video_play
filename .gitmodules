@@ -1,9 +1,6 @@
 [submodule "external/ouzel"]
 	path = external/ouzel
 	url = https://github.com/elnormous/ouzel.git
-[submodule "external/libvlc-sdk"]
-	path = external/libvlc-sdk
-	url = https://github.com/RSATom/libvlc-sdk
 [submodule "external/vlc"]
 	path = external/vlc
 	url = https://github.com/videolan/vlc
