@@ -4,6 +4,3 @@
 [submodule "external/vlc"]
 	path = external/vlc
 	url = https://github.com/videolan/vlc
-[submodule "external/vlc-2.2.1.32-2013"]
-	path = external/vlc-2.2.1.32-2013
-	url = https://github.com/sunqueen/vlc-2.2.1.32-2013
