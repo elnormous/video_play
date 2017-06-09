@@ -6,3 +6,7 @@ x64/
 Release/
 Debug/
 ipch/
+*.a
+video_play
+*.o
+Prefix.hpp.gch
