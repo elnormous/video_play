@@ -8,17 +8,20 @@ using namespace ouzel;
 using namespace scene;
 using namespace graphics;
 
-const uint32_t WIDTH = 3840;
-const uint32_t HEIGHT = 2160;
-
-/*unsigned setup(void** opaque, char* chroma, unsigned* width, unsigned* height, unsigned* pitches, unsigned* lines)
+static unsigned setup(void** opaque, char* chroma, unsigned* width, unsigned* height, unsigned* pitches, unsigned* lines)
 {
-    pixels.resize((*width) * (*height) * 4);
-    
-    return 1;
-}*/
+    VideoLibvlc* video = reinterpret_cast<VideoLibvlc*>(*opaque);
 
-void cleanup(void* opaque)
+    memcpy(chroma, "RGBA", 4);
+    *pitches = *width * 4;
+    *lines = *height;
+
+    video->resize(*width, *height);
+
+    return 1;
+}
+
+static void cleanup(void* opaque)
 {
 }
 
@@ -103,13 +106,10 @@ bool VideoLibvlc::init(const std::string& stream)
     m = nullptr;
 
     libvlc_video_set_callbacks(mp, ::lock, ::unlock, display, this);
-    libvlc_video_set_format(mp, "RGBA", WIDTH, HEIGHT, WIDTH * 4);
-    //libvlc_video_set_format_callbacks(mp, setup, cleanup);
-
-    buffer.resize(WIDTH * HEIGHT * 4);
+    //libvlc_video_set_format(mp, "RGBA", WIDTH, HEIGHT, WIDTH * 4);
+    libvlc_video_set_format_callbacks(mp, setup, cleanup);
 
     texture = std::make_shared<ouzel::graphics::Texture>();
-    texture->init(Size2(static_cast<float>(WIDTH), static_cast<float>(HEIGHT)), true, false);
 
     libvlc_media_player_play(mp);
 
@@ -143,7 +143,7 @@ void VideoLibvlc::draw(const ouzel::Matrix4& transformMatrix,
         if (dirty)
         {
             std::lock_guard<std::mutex> dataLock(dataMutex);
-            texture->setData(buffer, Size2(static_cast<float>(WIDTH), static_cast<float>(HEIGHT)));
+            texture->setData(buffer, Size2(static_cast<float>(width), static_cast<float>(height)));
             dirty = false;
         }
 
@@ -173,6 +173,18 @@ void VideoLibvlc::draw(const ouzel::Matrix4& transformMatrix,
                                                     scissorTest,
                                                     scissorRectangle);
     }
+}
+
+void VideoLibvlc::resize(unsigned newWidth, unsigned newHeight)
+{
+    std::lock_guard<std::mutex> dataLock(dataMutex);
+
+    width = newWidth;
+    height = newHeight;
+
+    buffer.resize(width * height * 4);
+
+    texture->init(Size2(static_cast<float>(width), static_cast<float>(height)), true, false);
 }
 
 void VideoLibvlc::lock()

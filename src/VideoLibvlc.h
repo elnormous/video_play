@@ -31,6 +31,7 @@ public:
 
     void lock();
     void unlock();
+    void resize(unsigned newWidth, unsigned newHeight);
 
     std::vector<uint8_t>& getBuffer() { return buffer; }
 
@@ -45,6 +46,9 @@ protected:
     libvlc_instance_t* inst = nullptr;
     libvlc_media_player_t* mp = nullptr;
     libvlc_media_t* m = nullptr;
+
+    unsigned width = 0;
+    unsigned height = 0;
 
     std::mutex dataMutex;
     std::vector<uint8_t> buffer;
