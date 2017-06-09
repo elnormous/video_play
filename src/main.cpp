@@ -14,6 +14,8 @@ void ouzelMain(std::vector<std::string> const& args)
         return;
     }
 
+    ouzel::sharedApplication->getFileSystem()->addResourcePath("Resources");
+
     ouzel::Settings settings;
     settings.size = ouzel::Size2(800.0f, 600.0f);
     settings.resizable = true;
